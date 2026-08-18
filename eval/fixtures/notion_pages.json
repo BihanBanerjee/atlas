@@ -1,0 +1,229 @@
+[
+  {
+    "id": "notion-roadmap-q3-2026",
+    "source": "notion",
+    "type": "page",
+    "tier": "signal",
+    "load_bearing": true,
+    "title": "Product Roadmap \u2014 Q3 2026",
+    "parent": "Product / Roadmap",
+    "created": "2026-06-24",
+    "updated": "2026-07-02",
+    "properties": {
+      "quarter": "Q3 2026",
+      "period": "2026-07-01..2026-09-30",
+      "owner": "Dana Whitfield",
+      "status": "In progress"
+    },
+    "facts": [
+      "Q3 2026 contains tracing GA, onboarding v2, billing revamp, audit log export",
+      "Audit log export targets end of August 2026",
+      "SAML SSO is NOT scheduled in Q3 \u2014 deferred to Q4",
+      "Page last updated 2026-07-02, three weeks after SSO was promised to Northwind for 15 September"
+    ],
+    "body": "# Product Roadmap \u2014 Q3 2026\n\n**Owner:** Dana Whitfield \u00b7 **Status:** In progress \u00b7 **Period:** July \u2013 September 2026\n\n## Committed\n\n| Item | Target | Status | Owner |\n|---|---|---|---|\n| Distributed tracing \u2014 GA | Mid-August | On track | Dana |\n| Self-serve onboarding v2 | July | Shipped | Dana |\n| Billing revamp | September | Not started | Dana |\n| Audit log export (12-month retention) | End of August | In progress | Dana |\n\nAudit log export is scoped against Northwind's compliance requirement. Twelve months retention, customer-initiated export, CSV and JSON.\n\n## Deferred to Q4\n\n| Item | Reason |\n|---|---|\n| SAML SSO / enterprise identity | Tracing GA and the billing work consume the quarter. Identity is a multi-week build with an auth-path migration we don't want to run alongside a GA. Scheduled Q4 \u2014 see Q4 roadmap. |\n| Data residency (EU) | Dependent on infrastructure work not yet scoped. |\n| Role-based access control | Sequenced behind SSO. |\n\n## Capacity notes\n\nSix engineers this quarter. Tracing GA takes roughly three of them through mid-August, and the billing revamp is a two-engineer effort for most of September. That leaves one engineer of genuine slack across the quarter, which is why the deferred list is as long as it is.\n\nWe are still without a Head of Engineering. Until that role is filled, Dana is the single point of sequencing for everything on this page.\n\n## Open risks\n\n- Tracing GA slipping would push billing into Q4 and compress everything behind it.\n- Enterprise identity being out of this quarter is a known commercial exposure. Sales has been told the Q4 timeline.",
+    "_file": "roadmap-q3-2026.md"
+  },
+  {
+    "id": "notion-roadmap-q4-2026",
+    "source": "notion",
+    "type": "page",
+    "tier": "signal",
+    "load_bearing": true,
+    "title": "Product Roadmap \u2014 Q4 2026",
+    "parent": "Product / Roadmap",
+    "created": "2026-07-02",
+    "updated": "2026-07-29",
+    "properties": {
+      "quarter": "Q4 2026",
+      "period": "2026-10-01..2026-12-31",
+      "owner": "Dana Whitfield",
+      "status": "Planned"
+    },
+    "facts": [
+      "SAML SSO scheduled October\u2013November 2026",
+      "This is 6-8 weeks after the 15 September date promised to Northwind",
+      "SSO ships after the Northwind renewal date of 30 September"
+    ],
+    "body": "# Product Roadmap \u2014 Q4 2026\n\n**Owner:** Dana Whitfield \u00b7 **Status:** Planned \u00b7 **Period:** October \u2013 December 2026\n\nDraft. Sequencing assumes a Head of Engineering is in seat by early October.\n\n## Planned\n\n| Item | Window | Notes |\n|---|---|---|\n| **SAML SSO \u2014 enterprise identity** | **October \u2013 November** | Okta and Azure AD. Includes auth-path migration for existing accounts. Estimated 5\u20137 weeks. |\n| Role-based access control | November | Depends on SSO landing first. |\n| SOC 2 Type II \u2014 evidence collection | October \u2013 December | Auditor selected, observation window starts October. |\n| Data residency (EU) | December | Scoping only in Q4, build in Q1 2027. |\n\n## SAML SSO \u2014 scope\n\nThe largest item of the quarter and the one carrying the most commercial weight.\n\n- SAML 2.0, Okta first, Azure AD in the same build\n- SCIM provisioning is explicitly out of scope for this pass\n- Auth-path migration for existing accounts is the risk \u2014 every current user is on individual credentials and there is no clean cutover without a maintenance window\n- Estimate 5\u20137 weeks with two engineers. October start puts completion in mid-to-late November.\n\n## Notes\n\nEnterprise identity has now been deferred out of two consecutive quarters. It was raised in the Q2 retrospective as an unscheduled blocker, deferred again in Q3 planning on capacity grounds, and is now the anchor item for Q4.\n\nSales has been asked to set expectations accordingly on any deal where identity is a gating requirement.",
+    "_file": "roadmap-q4-2026.md"
+  },
+  {
+    "id": "notion-customer-commitments-log",
+    "source": "notion",
+    "type": "page",
+    "tier": "signal",
+    "load_bearing": true,
+    "title": "Customer Commitments Log",
+    "parent": "Sales / Accounts",
+    "created": "2026-04-11",
+    "updated": "2026-07-14",
+    "properties": {
+      "owner": "Marcus Oyelaran",
+      "review_cadence": "Monthly",
+      "status": "Active"
+    },
+    "facts": [
+      "Records Northwind audit log export (Q3), Bastion SOC 2 report, Calder SLA upgrade",
+      "Does NOT record the SAML SSO commitment made to Northwind on 11 June 2026",
+      "Last updated 2026-07-14, a month after the SSO promise"
+    ],
+    "body": "# Customer Commitments Log\n\n**Owner:** Marcus Oyelaran \u00b7 **Reviewed:** monthly, in the sales and product sync\n\nAnything we have told a customer we will deliver, with a date attached, belongs on this page. If it isn't here, product isn't tracking it.\n\n## Open commitments\n\n| Customer | Commitment | Committed on | Due | Owner | Status | Source |\n|---|---|---|---|---|---|---|\n| Northwind Logistics | Audit log export, 12-month retention, customer-initiated | 11 Jun 2026 | End of August 2026 | Dana | On track | Email \u2014 enterprise requirements thread |\n| Bastion Freight | SOC 2 Type II report once available | 3 May 2026 | On completion | Ravi | Blocked \u2014 observation window starts October | Renewal call |\n| Calder Systems | SLA upgrade to 99.9% with credits | 22 Apr 2026 | 1 Oct 2026 | Marcus | On track | Contract amendment |\n| Ravelin Health | Quarterly usage review | 15 Mar 2026 | Ongoing | Marcus | On track | Onboarding call |\n\n## Closed commitments\n\n| Customer | Commitment | Closed | Notes |\n|---|---|---|---|\n| Calder Systems | Results diffing in CI | Feb 2026 | Shipped |\n| Meridian Grid | Custom report export | May 2026 | Shipped |\n| Northwind Logistics | Onboarding session for new team | Apr 2026 | Delivered |\n\n## Process\n\nCommitments get added here by whoever made them, within one working day. Marcus reviews the page in the monthly sales and product sync and confirms each item still has an owner and a live date.\n\nGaps in this page have caused problems before. If a commitment lives only in someone's inbox, product has no way to know it exists.",
+    "_file": "customer-commitments-log.md"
+  },
+  {
+    "id": "notion-hiring-pipeline",
+    "source": "notion",
+    "type": "page",
+    "tier": "signal",
+    "title": "Hiring Pipeline",
+    "parent": "People / Recruiting",
+    "created": "2026-02-04",
+    "updated": "2026-08-05",
+    "properties": {
+      "owner": "Ravi Menon",
+      "status": "Active"
+    },
+    "facts": [
+      "Head of Engineering \u2014 two finalists, Elena Vasquez and Tom Brennan",
+      "Elena references completed 30 July 2026, Tom pending",
+      "Decision deadline 22 August 2026",
+      "Senior backend role filled May 2026 after band increase"
+    ],
+    "body": "# Hiring Pipeline\n\n**Owner:** Ravi Menon \u00b7 Updated weekly\n\n## Open roles\n\n| Role | Opened | Stage | Owner |\n|---|---|---|---|\n| Head of Engineering | May 2026 | Final \u2014 two candidates | Ravi |\n| Account Executive | July 2026 | Sourcing | Marcus |\n| Support Engineer | July 2026 | Sourcing | Dana |\n\n## Head of Engineering \u2014 finalists\n\n**Decision deadline: 22 August 2026.**\n\n| | Elena Vasquez | Tom Brennan |\n|---|---|---|\n| Current | Director of Engineering, Series C company | Staff Engineer / team lead |\n| Team size managed | 24 across three teams | 6, informally |\n| Loop completed | 17 July | 24 July |\n| References | Completed 30 July \u2014 strong | Pending |\n| Asking base | $265,000 | $225,000 |\n| Asking equity | 0.9% | 0.6% |\n| Notes | Above the approved band on both. Has run an org through the exact scaling stage we're entering. | Inside band on both. Stronger technically, less management experience \u2014 would be a step up into the role. |\n\nApproved band for this role is **$240,000 base and up to 0.8% equity**. See the role scorecard.\n\nElena's reference calls were unusually specific \u2014 two separate people described her handling a re-platforming under time pressure without losing anyone. That is the failure mode we're most worried about.\n\nTom would be cheaper and would probably be very good in eighteen months. The question is whether we have eighteen months.\n\n## Closed this year\n\n| Role | Closed | Notes |\n|---|---|---|\n| Senior Backend Engineer | May 2026 | Closed within three weeks of raising the band ~12%. Two prior offers declined on compensation. |\n| Customer Success Lead | March 2026 | |",
+    "_file": "hiring-pipeline.md"
+  },
+  {
+    "id": "notion-head-of-engineering-scorecard",
+    "source": "notion",
+    "type": "page",
+    "tier": "signal",
+    "load_bearing": true,
+    "title": "Role Scorecard \u2014 Head of Engineering",
+    "parent": "People / Recruiting",
+    "created": "2026-05-06",
+    "updated": "2026-05-06",
+    "properties": {
+      "role": "Head of Engineering",
+      "owner": "Dana Whitfield",
+      "status": "Approved"
+    },
+    "facts": [
+      "Approved compensation band $240,000 base, up to 0.8% equity",
+      "Band approved by Ravi and Nadia Osei, May 2026"
+    ],
+    "body": "# Role Scorecard \u2014 Head of Engineering\n\n**Owner:** Dana Whitfield \u00b7 **Approved:** May 2026 \u00b7 **Reports to:** Dana Whitfield\n\n## Why this role exists\n\nDana is currently carrying architecture, delivery sequencing, and people management for a team of six, going to ten. Roughly 35% of her week is in one-to-ones and performance conversations, which is time not spent on the parts of the product only she can do.\n\nThis role takes delivery and people. Architecture stays with Dana.\n\n## Mission \u2014 first twelve months\n\n1. Own quarterly delivery. The roadmap ships on the dates it says, or the dates change before the quarter starts rather than during it.\n2. Grow the team from six to ten without a drop in shipping velocity.\n3. Establish an on-call rotation that doesn't route everything to Dana.\n\n## Must have\n\n- Has managed engineers through a 2x team growth, ideally at Series A to B stage\n- Distributed systems depth sufficient to review design docs credibly\n- Has owned a quarterly planning process end to end\n- Has hired at least six engineers personally\n\n## Nice to have\n\n- Developer tools or observability background\n- Experience with an enterprise readiness push \u2014 SSO, audit, compliance\n- Has worked with a technical founder and not resented it\n\n## Compensation\n\n**Approved band: $240,000 base, up to 0.8% equity, standard four-year vest with a one-year cliff.**\n\nBand approved by Ravi and Nadia Osei in May. It sits at roughly the 60th percentile for the role at this stage, which is deliberate \u2014 we were losing candidates at the 40th percentile earlier this year and lost six weeks per attempt doing it.\n\nAnything above this band needs board approval before an offer goes out.\n\n## Interview loop\n\n1. Intro with Ravi \u2014 45 min\n2. Technical depth with Dana \u2014 90 min\n3. Delivery and planning case study \u2014 60 min\n4. Two peer conversations with senior engineers\n5. Reference calls \u2014 minimum three, at least two direct reports",
+    "_file": "head-of-engineering-scorecard.md"
+  },
+  {
+    "id": "notion-okrs-q3-2026",
+    "source": "notion",
+    "type": "page",
+    "tier": "signal",
+    "title": "Company OKRs \u2014 Q3 2026",
+    "parent": "Company / Planning",
+    "created": "2026-07-01",
+    "updated": "2026-08-03",
+    "properties": {
+      "quarter": "Q3 2026",
+      "owner": "Ravi Menon",
+      "status": "In progress"
+    },
+    "facts": [
+      "Q3 ARR target $1.3M",
+      "Series A target $12M, close by end of October 2026",
+      "Enterprise readiness objective covers SOC 2 and audit logs \u2014 not SSO",
+      "Head of Engineering hire is a Q3 key result"
+    ],
+    "body": "# Company OKRs \u2014 Q3 2026\n\n**Owner:** Ravi Menon \u00b7 **Period:** July \u2013 September 2026\n\n## O1 \u2014 Close the Series A\n\n| Key result | Target | Status |\n|---|---|---|\n| Term sheet signed | By 15 August | Done \u2014 Fernpath, 22 July |\n| Diligence complete | By 10 September | In progress |\n| Round closed and funded | By 31 October | Not started |\n\n## O2 \u2014 Reach $1.3M ARR\n\n| Key result | Target | Status |\n|---|---|---|\n| ARR at quarter end | $1,300,000 | At $1.12M as of 1 August |\n| Net new customers | 18 across the quarter | 3 in July |\n| Net revenue retention | \u2265 115% | 118% in Q2, tracking similar |\n| Trial-to-paid conversion | \u2265 7% | 6.6% in July |\n\n## O3 \u2014 Enterprise readiness\n\n| Key result | Target | Status |\n|---|---|---|\n| SOC 2 Type II observation window started | By 1 October | Auditor selected |\n| Audit log export shipped | End of August | In progress |\n| Zero deals lost to compliance gaps in Q3 | 0 | 0 so far |\n\n## O4 \u2014 Get Dana out of the org chart\n\n| Key result | Target | Status |\n|---|---|---|\n| Head of Engineering hired and started | By 1 October | Two finalists, decision due 22 August |\n| Dana's time in one-to-ones | Under 15% | Currently ~35% |\n\n## Notes\n\nO3 deliberately does not include enterprise identity. That work is scheduled for Q4 and committing to it this quarter would be committing to something we don't have the capacity to do. The measurable outcome we care about \u2014 deals not lost to compliance gaps \u2014 is what's on the page instead.\n\nWorth revisiting at the Q3 board meeting on 17 September if that third key result stops holding.",
+    "_file": "okrs-q3-2026.md"
+  },
+  {
+    "id": "notion-spec-saml-sso",
+    "source": "notion",
+    "type": "page",
+    "tier": "supporting",
+    "title": "Spec \u2014 SAML SSO",
+    "parent": "Product / Specs",
+    "created": "2026-05-29",
+    "updated": "2026-06-16",
+    "properties": {
+      "status": "Draft \u2014 not scheduled",
+      "owner": "Dana Whitfield"
+    },
+    "body": "# Spec \u2014 SAML SSO\n\n> **Status: draft. Not scheduled.** Written to size the work, not to commit to it.\n> See the quarterly roadmaps for when this is actually planned.\n\n## Problem\n\nEvery user authenticates directly against Tensile with an individual account.\nFor customers consolidating identity onto an IdP, this means we are the vendor\nthat gets written up in their access audit.\n\nRaised by Northwind in the May security review, by Calder in the context of\nseat expansion, and by two prospects in Q2.\n\n## Scope\n\n**In scope**\n- SAML 2.0 service-provider-initiated flow\n- Okta and Azure AD as verified IdPs\n- Just-in-time provisioning on first sign-in\n- Domain-based account routing\n- Enforcement setting \u2014 allow, prefer, or require SSO per account\n\n**Out of scope**\n- SCIM provisioning\n- OIDC\n- Directory sync of groups or roles\n- Multi-IdP per account\n\n## The hard part\n\nEvery existing user has a password. Migration is the risk, not the SAML\nimplementation itself.\n\nOptions considered:\n\n1. **Hard cutover.** Account admin enables SSO, all users forced through IdP on\n   next sign-in. Simple, but locks out anyone not in the IdP.\n2. **Dual-path with grace period.** Both methods valid for a configurable\n   window, then password auth disabled. More code, far fewer support tickets.\n3. **Opt-in per user.** Users choose. Never converges \u2014 some accounts would run\n   both indefinitely.\n\n**Recommendation: option 2**, 30-day default grace period.\n\n## Estimate\n\n| Component | Effort |\n|---|---|\n| SAML integration and IdP verification | 1.5 weeks |\n| JIT provisioning and domain routing | 1 week |\n| Migration path and grace period | 2 weeks |\n| Admin UI and enforcement settings | 1 week |\n| Testing against both IdPs | 1 week |\n| **Total** | **5\u20137 weeks, two engineers** |\n\n## Dependencies\n\nNone technically. The constraint is entirely capacity \u2014 this cannot run\nalongside a GA release, because both need the same two engineers and the auth\nmigration needs undivided attention.",
+    "_file": "spec-saml-sso.md"
+  },
+  {
+    "id": "notion-roadmap-q1-2026",
+    "source": "notion",
+    "type": "page",
+    "tier": "supporting",
+    "title": "Product Roadmap \u2014 Q1 2026",
+    "parent": "Product / Roadmap",
+    "created": "2025-12-16",
+    "updated": "2026-03-31",
+    "properties": {
+      "quarter": "Q1 2026",
+      "period": "2026-01-01..2026-03-31",
+      "owner": "Dana Whitfield",
+      "status": "Complete"
+    },
+    "body": "# Product Roadmap \u2014 Q1 2026\n\n**Owner:** Dana Whitfield \u00b7 **Status:** Complete\n\n## Committed\n\n| Item | Target | Status |\n|---|---|---|\n| Results diffing in CI | February | Shipped |\n| Scheduled test runs | February | Shipped |\n| Three integrations \u2014 Slack, Jira, PagerDuty | March | Shipped |\n| Distributed tracing \u2014 design and prototype | March | Shipped |\n\n## Not committed, discussed\n\n| Item | Outcome |\n|---|---|\n| Federated identity | Raised, not scoped. No customer had made it a condition at this point. |\n| EU data residency | Raised in one deal. Not scoped. |\n| Mobile client | Explored, dropped. |\n\n## Retrospective\n\nResults diffing was the quarter's win and is now the single most-cited reason\ncustomers give for renewing.\n\nThe tracing prototype took longer than planned because we underestimated the\nsampling problem, which then went on to be the blocking issue in beta as well.\nA pattern worth noticing.\n\nTwo enterprise-shaped requests surfaced this quarter \u2014 identity and residency \u2014\nand we scoped neither. At the time that was the right call. Recording it here\nso the decision is traceable if it turns out not to have been.",
+    "_file": "roadmap-q1-2026.md"
+  },
+  {
+    "id": "notion-roadmap-q2-2026",
+    "source": "notion",
+    "type": "page",
+    "tier": "signal",
+    "title": "Product Roadmap \u2014 Q2 2026",
+    "parent": "Product / Roadmap",
+    "created": "2026-03-18",
+    "updated": "2026-06-28",
+    "properties": {
+      "quarter": "Q2 2026",
+      "period": "2026-04-01..2026-06-30",
+      "owner": "Dana Whitfield",
+      "status": "Complete"
+    },
+    "facts": [
+      "Q2 2026 shipped onboarding v1, tracing private beta, pricing experiment",
+      "Tracing GA was scheduled into Q3, not Q2"
+    ],
+    "body": "# Product Roadmap \u2014 Q2 2026\n\n**Owner:** Dana Whitfield \u00b7 **Status:** Complete \u00b7 **Period:** April \u2013 June 2026\n\n## Committed\n\n| Item | Target | Status | Notes |\n|---|---|---|---|\n| First-run onboarding simplification | April | Shipped | Cut three steps from setup. Trial-to-paid moved 4.1% \u2192 6.3%. |\n| Distributed tracing \u2014 private beta | April | Shipped | Opened to 8 accounts by end of month. |\n| Results diffing in CI | April | Shipped | Carried over from Q1, three accounts using it in pipelines. |\n| Infrastructure cost reduction | May | Shipped | Our own load-test workloads cut roughly 45%. |\n| Pricing page experiment | June | Reverted | Conversion dropped 6.3% \u2192 5.4%. Reverted 29 June. |\n\n## Deferred out of Q2\n\n| Item | Moved to | Reason |\n|---|---|---|\n| Distributed tracing GA | Q3 | Beta feedback surfaced two blocking issues in the sampling path. |\n| Billing revamp | Q3 | Sequenced behind tracing. |\n\n## Retrospective\n\nOnboarding was the highest-leverage thing we did all quarter and it was also the smallest. Worth remembering when we're weighing large bets next quarter.\n\nThe pricing experiment was run without a clear success metric agreed up front, which is why it took two weeks to decide it had failed. Not repeating that.\n\nEnterprise requirements came up in two lost or stalled deals this quarter \u2014 one on identity, one on data residency. Neither is scheduled anywhere yet. Flagging for Q3 planning.",
+    "_file": "roadmap-q2-2026.md"
+  },
+  {
+    "id": "notion-spec-audit-log-export",
+    "source": "notion",
+    "type": "page",
+    "tier": "supporting",
+    "title": "Spec \u2014 Audit Log Export",
+    "parent": "Product / Specs",
+    "created": "2026-06-22",
+    "updated": "2026-07-14",
+    "properties": {
+      "status": "In progress \u2014 Q3",
+      "owner": "Dana Whitfield"
+    },
+    "body": "# Spec \u2014 Audit Log Export\n\n**Status:** in progress, targeting end of August 2026.\n\n## Problem\n\nWe log access events and retain them for ninety days internally. Customers\ncannot see them, export them, or configure retention.\n\nNorthwind's security review flagged this as a remediation item. Their\nrequirement is twelve months of retention with customer-initiated export in a\nmachine-readable format.\n\n## Scope\n\n**Events captured**\n\n| Event | Detail |\n|---|---|\n| Authentication | sign-in, sign-out, failed attempt |\n| Account management | user added, removed, role changed |\n| Test lifecycle | run created, started, cancelled, deleted |\n| Configuration | settings changed, integrations added or removed |\n| Data access | results viewed, exported |\n\n**Retention.** Twelve months default. Configurable to twenty-four for\nenterprise accounts.\n\n**Export.** Admin-initiated, CSV and JSON, asynchronous with a download link on\ncompletion. Date range filter, event type filter.\n\n**Out of scope for this pass:** streaming to a customer SIEM, real-time\nwebhooks on audit events.\n\n## Implementation notes\n\nEvents already exist in the application log. The work is a durable audit store\nseparate from application logging, because application logs rotate and audit\nrecords cannot.\n\nWriting to ClickHouse alongside results data. Audit volume is small relative to\nresults, so no capacity concern.\n\n## Estimate\n\nThree weeks, one engineer. Sprint plan places completion in the final week of\nAugust.\n\n## Acceptance\n\nAn account admin can export twelve months of audit events for their account in\nunder five minutes, without contacting support.",
+    "_file": "spec-audit-log-export.md"
+  },
+  {
+    "id": "notion-hiring-retrospective-h1",
+    "source": "notion",
+    "type": "page",
+    "tier": "supporting",
+    "title": "Hiring Retrospective \u2014 H1 2026",
+    "parent": "People / Recruiting",
+    "created": "2026-07-02",
+    "updated": "2026-07-02",
+    "properties": {
+      "period": "H1 2026",
+      "owner": "Ravi Menon"
+    },
+    "body": "# Hiring Retrospective \u2014 H1 2026\n\n## What we did\n\n| Role | Opened | Closed | Time to close |\n|---|---|---|---|\n| Customer Success Lead | Jan | Mar | 9 weeks |\n| Senior Backend Engineer | Feb | May | 13 weeks |\n| Head of Engineering | May | Open | 8 weeks so far |\n\nTwo hires from three searches. Headcount 11 to 13 over the half.\n\n## What went wrong\n\n**The backend search took thirteen weeks and should have taken six.** Two offers\ndeclined on compensation before we accepted the problem was our band, not the\ncandidates. Once we moved the band we closed in three weeks.\n\nThe cost of that delay was roughly seven weeks of an engineer's output, against\nan annual band increase of about $18,000 for that role. We optimised the small\nnumber and paid the large one.\n\n**We interviewed nine people for the backend role.** Two would have been enough\nhad the band been right.\n\n## What went right\n\n**Referrals outperformed everything.** Both hires came through the network. Of\nnine backend candidates, the two we made offers to were both referrals.\n\n**Being honest in interviews worked.** Telling candidates what is broken \u2014 that\nDana carries too much, that enterprise capabilities are missing, that there is\nno career framework \u2014 has not lost us anyone we wanted. One candidate said it\nwas why they proceeded.\n\n## What to change in H2\n\n- [ ] Check the band against benchmarking before opening any role, not after two declines\n- [ ] Ask for referrals explicitly at the point of opening a role\n- [ ] Keep telling candidates the unflattering things\n\n## Open question\n\nAisha Rahman withdrew at final stage citing the reporting line \u2014 Head of\nEngineering reporting to the CTO rather than the CEO. She is not the first to\nraise it. Worth deciding whether that structure is a considered choice or an\naccident we have not revisited.",
+    "_file": "hiring-retrospective-h1.md"
+  }
+]

@@ -1,0 +1,362 @@
+{
+  "_meta": {
+    "description": "Golden Q&A pairs for the Atlas CI eval suite, drafted against docs/FACTS.md.",
+    "source_of_truth": "docs/FACTS.md",
+    "categories": [
+      "signal_lookup",
+      "multi_hop",
+      "reranking_near_duplicate",
+      "hybrid_retrieval",
+      "pii_redaction",
+      "missing_data"
+    ],
+    "note": "expect_refusal=true items are Deliberate Gaps (docs/FACTS.md Deliberate Gaps section) — a correct system must decline to answer, not invent a figure.",
+    "scope": "This file covers Normal Requests + Missing Data only — the two categories meaningful at v0.1 (baseline). Edge Cases (empty/multilingual/cross-source/long queries) land at v0.3 once hybrid retrieval exists to stress; Adversarial Prompts (15+ injection techniques) land at v0.5 once the guardrail layer exists to test. See docs/specs/EVOLUTION.md.",
+    "fixtures": "Every question is answerable from eval/fixtures/{emails,notion_pages,drive_docs}.json — a 48-document curated subset (23 Gmail + 11 Notion + 14 Drive) built by scripts/build_fixtures.py from data/corpus. This is CI's index, not the full 256-document corpus. Roughly half the documents are never a correct source for any question; they are near-neighbour distractors drawn from the dense neighbourhoods in docs/PERSONA.md (financials, compensation, renewals, SSO/identity, roadmap). They are what make Context Precision and reranking measurable. There is deliberately no per-document relevance tag: relevance is a property of the (question, document) pair, defined only by the per-question source fields below.",
+    "source_semantics": "acceptable_sources: documents that supply a necessary part of the expected answer — for multi_hop questions the set is needed jointly; otherwise each listed document is individually sufficient. partial_sources: documents that corroborate a fragment of the answer but cannot support it alone — retrieving one is not a recall success and must not be scored as a precision failure. expect_refusal questions list no sources: the answer exists nowhere in the fixtures."
+  },
+  "questions": [
+    {
+      "id": "q01",
+      "question": "What date did Tensile promise Northwind Logistics that SAML SSO would ship?",
+      "expected_answer": "September 15, 2026.",
+      "category": "signal_lookup",
+      "acceptable_sources": [
+        "gmail-northwind-sso-commitment",
+        "gmail-northwind-renewal"
+      ],
+      "source": "FACTS.md — The Northwind Thread, 'The commitment' table"
+    },
+    {
+      "id": "q02",
+      "question": "Who made the SSO promise to Northwind, and who else saw it?",
+      "expected_answer": "Marcus Oyelaran (Head of Sales) promised it to Linda Marsh in an email dated 11 June 2026. Ravi Menon (CEO) was CC'd on the thread.",
+      "category": "signal_lookup",
+      "acceptable_sources": [
+        "gmail-northwind-sso-commitment",
+        "gmail-northwind-renewal"
+      ],
+      "source": "FACTS.md — The Northwind Thread, 'The commitment' table"
+    },
+    {
+      "id": "q03",
+      "question": "Did we commit SAML SSO to Northwind, and is it actually on the product roadmap in time for their renewal?",
+      "expected_answer": "Yes, SSO was promised for 15 September 2026, but it is not a Q3 deliverable. The Q3 roadmap (Jul–Sep) ships distributed tracing GA, self-serve onboarding, billing revamp, and audit log export, and lists 'SAML SSO / enterprise identity' under Deferred to Q4 — the stated reason being that tracing GA and billing consume the quarter and identity is a multi-week build with an auth-path migration. SSO is scheduled Oct–Nov 2026 on the Q4 roadmap, which is after both the promised date and Northwind's 30 September 2026 renewal.",
+      "category": "multi_hop",
+      "acceptable_sources": [
+        "gmail-northwind-sso-commitment",
+        "gmail-northwind-renewal",
+        "notion-roadmap-q3-2026",
+        "notion-roadmap-q4-2026"
+      ],
+      "source": "FACTS.md — The Northwind Thread, 'The reality' table",
+      "trap": "SSO fact split across Gmail (promise) and Notion (roadmap) — flagship demo question, no single source answers it"
+    },
+    {
+      "id": "q04",
+      "question": "Does the customer commitments log in Notion record the SSO promise made to Northwind?",
+      "expected_answer": "No. The Notion customer commitments log records commitments to Northwind (audit logs, Q3), Bastion Freight (SOC 2 report), and Calder Systems (SLA upgrade), but it does not record the SSO promise. That promise exists only in the Gmail thread.",
+      "category": "multi_hop",
+      "acceptable_sources": [
+        "notion-customer-commitments-log"
+      ],
+      "source": "FACTS.md — The Northwind Thread, 'The third surface'"
+    },
+    {
+      "id": "q05",
+      "question": "When is Northwind Logistics' contract up for renewal?",
+      "expected_answer": "30 September 2026.",
+      "category": "signal_lookup",
+      "acceptable_sources": [
+        "gmail-northwind-renewal",
+        "gmail-northwind-sso-commitment",
+        "drive-northwind-msa",
+        "drive-board-deck-q2-2026",
+        "gmail-investor-update-2026-07"
+      ],
+      "source": "FACTS.md — The Northwind Thread table"
+    },
+    {
+      "id": "q06",
+      "question": "How many named users does Northwind have now, versus at signature?",
+      "expected_answer": "40 users at signature, grown to 58 active users since then.",
+      "category": "signal_lookup",
+      "acceptable_sources": [
+        "gmail-northwind-renewal"
+      ],
+      "partial_sources": [
+        "drive-northwind-msa"
+      ],
+      "note": "gmail-northwind-renewal answers both halves in one sentence ('you've gone from 40 to 58 active users since signature'). The MSA is partial only: clause 3.2 covers 'up to forty (40) Named Users' but has no current count.",
+      "source": "FACTS.md — The Northwind Thread table"
+    },
+    {
+      "id": "q07",
+      "question": "What was Tensile's ARR in June 2026?",
+      "expected_answer": "$940,000.",
+      "category": "reranking_near_duplicate",
+      "acceptable_sources": [
+        "gmail-investor-update-2026-06",
+        "drive-financial-model-2026",
+        "drive-month-end-close-june",
+        "drive-pitch-deck-v3"
+      ],
+      "source": "FACTS.md — Financials by Month",
+      "trap": "One of six near-identical monthly investor updates — tests whether retrieval finds the correct month, not just 'an' update"
+    },
+    {
+      "id": "q08",
+      "question": "What was Tensile's ARR in July 2026?",
+      "expected_answer": "$1,040,000.",
+      "category": "reranking_near_duplicate",
+      "acceptable_sources": [
+        "gmail-investor-update-2026-07",
+        "drive-financial-model-2026",
+        "drive-month-end-close-july",
+        "drive-pitch-deck-v4"
+      ],
+      "source": "FACTS.md — Financials by Month",
+      "trap": "Same as q07 — near-duplicate monthly updates"
+    },
+    {
+      "id": "q09",
+      "question": "How much did month-over-month growth decelerate in June 2026, and by how much?",
+      "expected_answer": "Growth decelerated to 9.3% month-over-month in June, down from roughly 11.5% the prior trend.",
+      "category": "signal_lookup",
+      "acceptable_sources": [
+        "gmail-investor-update-2026-06"
+      ],
+      "source": "FACTS.md — Financials by Month, note below table"
+    },
+    {
+      "id": "q10",
+      "question": "What is Tensile's current cash runway as of August 2026?",
+      "expected_answer": "Roughly 7 months — cash runs out at approximately March 2027 at current burn, absent the Series A.",
+      "category": "signal_lookup",
+      "acceptable_sources": [
+        "drive-financial-model-2026"
+      ],
+      "source": "FACTS.md — Financials by Month, runway note",
+      "note": "Partly computational: 'March 2027' is stated verbatim in the financial model, but the '7 months' figure is not — it must be derived from August cash ($1,334,000) divided by August net burn ($192,000) = 6.9 months. Grade the March 2027 date as the retrievable fact; treat the month count as derived."
+    },
+    {
+      "id": "q11",
+      "question": "What terms did Fernpath Capital offer in their term sheet?",
+      "expected_answer": "$12M at a $52M post-money valuation, 1x non-participating preference, broad-based weighted average anti-dilution, option pool negotiated down to 10.5% pre-money. One board seat to Fernpath (board goes to five), with an independent seat to be filled within six months of close.",
+      "category": "hybrid_retrieval",
+      "acceptable_sources": [
+        "gmail-fernpath-term-sheet"
+      ],
+      "partial_sources": [
+        "drive-cap-table-summary",
+        "gmail-investor-update-2026-07"
+      ],
+      "source": "FACTS.md — The Raise, Fernpath Capital table",
+      "trap": "Distinctive proper noun 'Fernpath' — exact match vs paraphrase test"
+    },
+    {
+      "id": "q12",
+      "question": "What has Aster Ventures indicated for the Series A, and do they have a term sheet?",
+      "expected_answer": "Aster (partner James Okonkwo) has indicated $10M at a $45M post-money valuation, but has only verbal interest — no term sheet has been issued.",
+      "category": "signal_lookup",
+      "acceptable_sources": [
+        "gmail-aster-competing-interest"
+      ],
+      "source": "FACTS.md — The Raise, Aster Ventures table",
+      "note": "drive-pitch-deck-v3 shows the same $10M-at-$45M figures but as Tensile's own ask, never attributed to Aster — citing it for Aster's indication would be wrong, so it is deliberately not a source."
+    },
+    {
+      "id": "q13",
+      "question": "When does Fernpath's exclusivity period expire?",
+      "expected_answer": "21 August 2026 (30 days from the term sheet received on 22 July 2026).",
+      "category": "signal_lookup",
+      "acceptable_sources": [
+        "gmail-fernpath-term-sheet",
+        "gmail-investor-update-2026-07"
+      ],
+      "partial_sources": [
+        "gmail-aster-competing-interest"
+      ],
+      "source": "FACTS.md — The Raise, Fernpath Capital table",
+      "note": "Partial: Ravi tells James the term sheet 'carries thirty days of exclusivity' but never states the 21 August expiry date."
+    },
+    {
+      "id": "q14",
+      "question": "Between pitch deck v3 and v4, which one shows a $12M ask and an enterprise slide?",
+      "expected_answer": "Pitch deck v4, dated 17 July 2026, shows the $12M at $52M ask and includes the enterprise slide. v3 (6 July 2026) shows ARR of $940,000 and a $10M at $45M ask, with no enterprise slide.",
+      "category": "reranking_near_duplicate",
+      "acceptable_sources": [
+        "drive-pitch-deck-v3",
+        "drive-pitch-deck-v4"
+      ],
+      "source": "FACTS.md — Pitch Decks, the near-miss pair",
+      "trap": "Near-identical documents, different figures — cleanest reranking test in the corpus"
+    },
+    {
+      "id": "q15",
+      "question": "What base salary is Elena Vasquez asking for, and how does it compare to the approved budget?",
+      "expected_answer": "Elena is asking $265,000 base, which is $25,000 over the approved $240,000 budget. She is also above the approved 0.8% equity band, asking 0.9%.",
+      "category": "pii_redaction",
+      "acceptable_sources": [
+        "gmail-comp-discussion-vasquez",
+        "notion-hiring-pipeline"
+      ],
+      "partial_sources": [
+        "notion-head-of-engineering-scorecard",
+        "drive-compensation-benchmarking",
+        "drive-board-deck-q2-2026"
+      ],
+      "source": "FACTS.md — Hiring table",
+      "note": "Partials each state the approved band ($240,000 / 0.8%) and the board-approval rule but not Elena's ask — that lives only in her comp email and the hiring pipeline."
+    },
+    {
+      "id": "q16",
+      "question": "How does Tom Brennan's ask compare to the approved Head of Engineering budget?",
+      "expected_answer": "Tom is asking $225,000 base and 0.6% equity, both under the approved budget of $240,000 base and 0.8% equity.",
+      "category": "pii_redaction",
+      "acceptable_sources": [
+        "gmail-comp-discussion-brennan",
+        "notion-hiring-pipeline"
+      ],
+      "partial_sources": [
+        "notion-head-of-engineering-scorecard",
+        "drive-compensation-benchmarking",
+        "drive-board-deck-q2-2026"
+      ],
+      "source": "FACTS.md — Hiring table",
+      "note": "Partials each state the approved band but not Tom's ask — that lives only in his comp email and the hiring pipeline."
+    },
+    {
+      "id": "q17",
+      "question": "What is the notice period difference between the two Head of Engineering candidates?",
+      "expected_answer": "Elena Vasquez has an 8-week notice period; Tom Brennan has a 4-week notice period.",
+      "category": "signal_lookup",
+      "acceptable_sources": [
+        "gmail-comp-discussion-vasquez",
+        "gmail-comp-discussion-brennan",
+        "drive-resume-elena-vasquez",
+        "drive-resume-tom-brennan"
+      ],
+      "source": "FACTS.md — Hiring table"
+    },
+    {
+      "id": "q18",
+      "question": "What is the decision deadline for the Head of Engineering role?",
+      "expected_answer": "22 August 2026.",
+      "category": "signal_lookup",
+      "acceptable_sources": [
+        "notion-hiring-pipeline",
+        "notion-okrs-q3-2026",
+        "gmail-comp-discussion-vasquez",
+        "gmail-comp-discussion-brennan"
+      ],
+      "source": "FACTS.md — Hiring section header"
+    },
+    {
+      "id": "q19",
+      "question": "How much of Tensile's current ARR is at risk from unmet enterprise requirements, and which accounts?",
+      "expected_answer": "$190,000, or 22% of current ARR, across three accounts: Northwind Logistics ($84,000, needs SAML SSO and audit log export, renews 30 Sep 2026), Calder Systems ($62,000, needs SOC 2 Type II, renews 1 Jan 2027), and Bastion Freight ($48,000, needs SOC 2 Type II, renews 1 Mar 2027).",
+      "category": "multi_hop",
+      "acceptable_sources": [
+        "drive-board-deck-q2-2026",
+        "drive-pitch-deck-v4"
+      ],
+      "partial_sources": [
+        "gmail-calder-soc2-question",
+        "gmail-bastion-soc2-followup",
+        "gmail-northwind-security-review"
+      ],
+      "source": "FACTS.md — Customers, 'ARR at risk' table",
+      "note": "Partials corroborate single rows of the risk table (Calder's SOC 2 need and January renewal; Bastion's blocked expansion; Northwind's flagged requirements) but none contains the $190,000 / 22% aggregate."
+    },
+    {
+      "id": "q20",
+      "question": "Which of the at-risk accounts renews before its required capability is expected to ship?",
+      "expected_answer": "Northwind Logistics is the only one falling due (30 Sep 2026) before its required capability (SSO) is expected to land (Oct–Nov 2026).",
+      "category": "multi_hop",
+      "acceptable_sources": [
+        "drive-board-deck-q2-2026"
+      ],
+      "source": "FACTS.md — Customers, note below 'ARR at risk' table"
+    },
+    {
+      "id": "q21",
+      "question": "What is the procurement deadline Northwind gave for the renewal decision?",
+      "expected_answer": "5 September 2026.",
+      "category": "signal_lookup",
+      "acceptable_sources": [
+        "gmail-northwind-renewal"
+      ],
+      "source": "FACTS.md — The Northwind Thread table"
+    },
+    {
+      "id": "q22",
+      "question": "What renewal price did Tensile propose to Northwind, and how did Linda Marsh respond?",
+      "expected_answer": "Tensile proposed $96,000 (a 14% uplift from $84,000), offered on 3 August 2026. Linda Marsh declined, pending confirmation that SSO would ship.",
+      "category": "signal_lookup",
+      "acceptable_sources": [
+        "gmail-northwind-renewal"
+      ],
+      "source": "FACTS.md — The Northwind Thread table",
+      "note": "drive-financial-model-2026 was removed as a source after close-reading: it contains no $96,000 figure (an earlier regex matched the substring inside September's $196,000 forecast burn) and nothing about Linda's response."
+    },
+    {
+      "id": "q23",
+      "question": "What is Bastion Freight waiting on before it will convert or expand?",
+      "expected_answer": "Bastion Freight is awaiting Tensile's SOC 2 report.",
+      "category": "signal_lookup",
+      "acceptable_sources": [
+        "gmail-bastion-soc2-followup",
+        "notion-customer-commitments-log",
+        "drive-board-deck-q2-2026"
+      ],
+      "source": "FACTS.md — Customers table"
+    },
+    {
+      "id": "q24",
+      "question": "Who filled the independent board seat at Tensile?",
+      "expected_answer": "This information is not available in the corpus. As of the current data, the independent board seat is vacant and no filling decision has been recorded.",
+      "category": "missing_data",
+      "acceptable_sources": [],
+      "expect_refusal": true,
+      "source": "FACTS.md — Deliberate Gaps"
+    },
+    {
+      "id": "q25",
+      "question": "What did Northwind Logistics decide about their renewal?",
+      "expected_answer": "This information is not available in the corpus — Northwind's renewal decision is not recorded anywhere in the dataset.",
+      "category": "missing_data",
+      "acceptable_sources": [],
+      "expect_refusal": true,
+      "source": "FACTS.md — Deliberate Gaps"
+    },
+    {
+      "id": "q26",
+      "question": "Which candidate, Elena Vasquez or Tom Brennan, was hired as Head of Engineering?",
+      "expected_answer": "This information is not available in the corpus — no hiring decision is recorded for the Head of Engineering role.",
+      "category": "missing_data",
+      "acceptable_sources": [],
+      "expect_refusal": true,
+      "source": "FACTS.md — Deliberate Gaps"
+    },
+    {
+      "id": "q27",
+      "question": "Did the Fernpath Series A round close?",
+      "expected_answer": "The outcome is not recorded in the corpus. The latest data (August 2026) shows the round still in progress: term sheet signed 22 July, diligence underway, close targeted by 31 October per the Q3 OKRs ('Round closed and funded — Not started'). Whether it ultimately closed is unknown and must not be asserted either way.",
+      "note": "Grading: a grounded 'not closed as of the latest data, outcome unknown' is correct; a bare refusal is also acceptable. Asserting that the round closed or failed is the failure this question exists to catch. notion-okrs-q3-2026 legitimately supports the in-progress framing without answering the outcome.",
+      "category": "missing_data",
+      "acceptable_sources": [],
+      "expect_refusal": true,
+      "source": "FACTS.md — Deliberate Gaps"
+    },
+    {
+      "id": "q28",
+      "question": "What was Tensile's ARR in September 2026?",
+      "expected_answer": "This information is not available in the corpus — no revenue figures are recorded after August 2026.",
+      "category": "missing_data",
+      "acceptable_sources": [],
+      "expect_refusal": true,
+      "source": "FACTS.md — Deliberate Gaps"
+    }
+  ]
+}

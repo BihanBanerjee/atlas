@@ -1,0 +1,450 @@
+[
+  {
+    "id": "gmail-northwind-sso-commitment",
+    "source": "gmail",
+    "type": "thread",
+    "tier": "signal",
+    "load_bearing": true,
+    "subject": "Q3 planning + enterprise requirements",
+    "thread_id": "t-0847",
+    "date": "2026-06-11",
+    "date_range": "2026-06-09..2026-06-11",
+    "participants": [
+      "Marcus Oyelaran <marcus@tensile.dev>",
+      "Linda Marsh <linda.marsh@northwindlogistics.com>",
+      "Ravi Menon <ravi@tensile.dev>"
+    ],
+    "facts": [
+      "SAML SSO promised to Northwind for 2026-09-15",
+      "Ravi Menon CC'd from the second message \u2014 the CEO was aware",
+      "Audit log export also committed, for end of August",
+      "Northwind renewal is 2026-09-30; access audit the week prior"
+    ],
+    "body": "## Message 1 \u2014 9 June 2026, 10:42\n\n**From:** Linda Marsh <linda.marsh@northwindlogistics.com>\n**To:** Marcus Oyelaran <marcus@tensile.dev>\n**Subject:** Q3 planning + enterprise requirements\n\nMarcus,\n\nFollowing up on our call last week. I've been through the security review with our IT group and there are a couple of things I need to flag before we get to the renewal conversation.\n\nThe main one: we're consolidating identity onto Okta across the whole org by the end of Q3. Anything that can't do SAML gets written up in the quarterly access audit, and I'd rather Tensile not be on that list. Right now my team is on individual logins, which will fail it.\n\nSecond, smaller \u2014 we need audit log export. Compliance wants twelve months of retention and a way to pull it themselves.\n\nWhere does SAML sit for you? I need something I can put in front of our CTO before renewal comes around.\n\nLinda Marsh\nVP Engineering, Northwind Logistics\n\n---\n\n## Message 2 \u2014 10 June 2026, 09:15\n\n**From:** Marcus Oyelaran <marcus@tensile.dev>\n**To:** Linda Marsh <linda.marsh@northwindlogistics.com>\n**Cc:** Ravi Menon <ravi@tensile.dev>\n**Subject:** Re: Q3 planning + enterprise requirements\n\nLinda,\n\nThanks for laying it out that clearly, it helps.\n\nAudit log export is the straightforward one \u2014 already scoped, and I can get you a date this week.\n\nOn SAML, let me check sequencing with Dana before I give you a number. Adding Ravi here, he's closer to the roadmap than I am.\n\nOne question so I scope it properly: is Okta the only IdP you need, or should we be thinking about Azure AD for the wider group as well?\n\nMarcus Oyelaran\nHead of Sales, Tensile\ntensile.dev\n\n---\n\n## Message 3 \u2014 10 June 2026, 14:03\n\n**From:** Linda Marsh <linda.marsh@northwindlogistics.com>\n**To:** Marcus Oyelaran <marcus@tensile.dev>\n**Cc:** Ravi Menon <ravi@tensile.dev>\n**Subject:** Re: Q3 planning + enterprise requirements\n\nOkta only \u2014 the rest of the group sits on the same tenant.\n\nTo be direct about timing. Our renewal is 30 September and the access audit runs the week before it. If SAML isn't live by then I'm either requesting an exception or moving the team to something that supports it, and I don't want to do either.\n\nLinda\n\n---\n\n## Message 4 \u2014 11 June 2026, 11:27\n\n**From:** Marcus Oyelaran <marcus@tensile.dev>\n**To:** Linda Marsh <linda.marsh@northwindlogistics.com>\n**Cc:** Ravi Menon <ravi@tensile.dev>\n**Subject:** Re: Q3 planning + enterprise requirements\n\nLinda,\n\nSpoke with the team. Good news on both counts.\n\nAudit log export with twelve month retention is in the Q3 build, targeting end of August. I'll confirm the exact date once the sprint plan firms up.\n\nOn identity \u2014 we'll have SAML SSO shipped for you by September 15. That puts you two weeks clear of the audit and ahead of the renewal date.\n\nI'll send a written summary next week that you can take to your CTO.\n\nMarcus Oyelaran\nHead of Sales, Tensile\ntensile.dev",
+    "_file": "northwind-sso-commitment.md"
+  },
+  {
+    "id": "gmail-northwind-renewal",
+    "source": "gmail",
+    "type": "thread",
+    "tier": "signal",
+    "load_bearing": true,
+    "subject": "Northwind renewal \u2014 commercial terms",
+    "thread_id": "t-0859",
+    "date": "2026-08-06",
+    "date_range": "2026-08-03..2026-08-06",
+    "participants": [
+      "Marcus Oyelaran <marcus@tensile.dev>",
+      "Linda Marsh <linda.marsh@northwindlogistics.com>",
+      "Ravi Menon <ravi@tensile.dev>"
+    ],
+    "facts": [
+      "Northwind renewal date 30 September 2026, current ACV $84,000",
+      "Marcus proposed uplift to $96,000; Linda declined pending SSO delivery",
+      "Linda requires written confirmation of the 15 September SSO date before going to procurement",
+      "Procurement deadline is 5 September 2026"
+    ],
+    "body": "## Message 1 \u2014 3 August 2026, 10:20\n\n**From:** Marcus Oyelaran <marcus@tensile.dev>\n**To:** Linda Marsh <linda.marsh@northwindlogistics.com>\n**Subject:** Northwind renewal \u2014 commercial terms\n\nLinda,\n\nStarting the renewal conversation early so neither of us is doing this in the last week of September.\n\nCurrent term ends 30 September at $84,000. For the coming year we'd propose $96,000, reflecting the seat growth on your side \u2014 you've gone from 40 to 58 active users since signature \u2014 and the tracing module, which goes GA this month and would be included rather than an add-on.\n\nHappy to walk through the detail whenever suits.\n\nMarcus Oyelaran\nHead of Sales, Tensile\n\n---\n\n## Message 2 \u2014 5 August 2026, 08:47\n\n**From:** Linda Marsh <linda.marsh@northwindlogistics.com>\n**To:** Marcus Oyelaran <marcus@tensile.dev>\n**Cc:** Ravi Menon <ravi@tensile.dev>\n**Subject:** Re: Northwind renewal \u2014 commercial terms\n\nMarcus,\n\nI'm going to be direct, and I'm adding Ravi because I think he should see this.\n\nI can't take a 14% uplift to procurement while an open commitment from June is unresolved. You told me on 11 June that SAML SSO would be shipped by 15 September. My access audit is the week of 21 September and the renewal is the week after that.\n\nIt's now August and I have had no delivery date, no build update, and nothing in writing beyond that email.\n\nSo before we discuss price: I need written confirmation that SAML SSO ships by 15 September. If that date holds, the uplift is a conversation I'm willing to have. If it doesn't, I need to know now, because my alternative is requesting an audit exception and that requires our CISO's sign-off with three weeks of notice.\n\nMy procurement deadline for the renewal paperwork is 5 September.\n\nLinda Marsh\nVP Engineering, Northwind Logistics\n\n---\n\n## Message 3 \u2014 6 August 2026, 07:15\n\n**From:** Ravi Menon <ravi@tensile.dev>\n**To:** Linda Marsh <linda.marsh@northwindlogistics.com>\n**Cc:** Marcus Oyelaran <marcus@tensile.dev>\n**Subject:** Re: Northwind renewal \u2014 commercial terms\n\nLinda,\n\nThank you for putting it that plainly, and you're right to.\n\nI'm not going to give you a confirmation this morning that I'd have to walk back in two weeks. Let me talk to Dana today and come back to you by Friday with an actual date and the reasoning behind it, whatever that date turns out to be.\n\nOn the commercial terms \u2014 let's set the uplift aside entirely until the delivery question is settled. It isn't the right order to do this in.\n\nRavi Menon\nCEO, Tensile",
+    "_file": "northwind-renewal.md"
+  },
+  {
+    "id": "gmail-northwind-security-review",
+    "source": "gmail",
+    "type": "thread",
+    "tier": "signal",
+    "subject": "Security questionnaire \u2014 Tensile",
+    "thread_id": "t-0729",
+    "date": "2026-05-27",
+    "date_range": "2026-05-19..2026-05-27",
+    "participants": [
+      "Karin Holt <karin.holt@northwindlogistics.com>",
+      "Dana Whitfield <dana@tensile.dev>",
+      "Linda Marsh <linda.marsh@northwindlogistics.com>"
+    ],
+    "facts": [
+      "Northwind security review conducted May 2026, ahead of the June requirements thread",
+      "Tensile has no SOC 2 report; observation window starts October 2026",
+      "Review flagged SSO and audit log export as gaps",
+      "Karin Holt is Information Security at Northwind Logistics"
+    ],
+    "body": "## Message 1 \u2014 19 May 2026, 14:33\n\n**From:** Karin Holt <karin.holt@northwindlogistics.com>\n**To:** Dana Whitfield <dana@tensile.dev>\n**Cc:** Linda Marsh <linda.marsh@northwindlogistics.com>\n**Subject:** Security questionnaire \u2014 Tensile\n\nDana,\n\nAttached is our standard vendor security questionnaire. We run this annually against every vendor with access to production telemetry, and Tensile is in scope this year because usage has grown past our internal threshold.\n\nSections 1 through 6 are the usual \u2014 encryption, key management, incident response, subprocessors. Section 7 covers access control and section 9 covers audit and logging. Those two tend to be where smaller vendors have gaps, so start there if you're triaging.\n\nWe'd like it back within two weeks if that's workable.\n\nKarin Holt\nInformation Security, Northwind Logistics\n\n---\n\n## Message 2 \u2014 26 May 2026, 18:02\n\n**From:** Dana Whitfield <dana@tensile.dev>\n**To:** Karin Holt <karin.holt@northwindlogistics.com>\n**Cc:** Linda Marsh <linda.marsh@northwindlogistics.com>\n**Subject:** Re: Security questionnaire \u2014 Tensile\n\nKarin,\n\nCompleted questionnaire attached. I've answered everything honestly, including where we fall short, because I'd rather you find the gaps from me than from the document.\n\nThe parts you'll care about:\n\n**Encryption and key management** \u2014 AES-256 at rest, TLS 1.3 in transit, keys in AWS KMS with annual rotation. No concerns here.\n\n**Incident response** \u2014 documented process, 24-hour customer notification commitment. We've had one Sev-1 in the last twelve months, disclosed at the time.\n\n**Section 7, access control** \u2014 this is a gap. We support individual accounts with enforced MFA, but we do not support SAML or any external identity provider today. Every user authenticates directly against us.\n\n**Section 9, audit and logging** \u2014 partial. We log access events and retain them for ninety days internally, but there is no customer-facing export and no configurable retention.\n\n**SOC 2** \u2014 we don't have a report. We've selected an auditor and the Type II observation window starts in October, which puts a report roughly mid-2027.\n\nI'd rather set expectations correctly than have this come back as a surprise in six months.\n\nDana Whitfield\nCTO, Tensile\n\n---\n\n## Message 3 \u2014 27 May 2026, 09:50\n\n**From:** Karin Holt <karin.holt@northwindlogistics.com>\n**To:** Dana Whitfield <dana@tensile.dev>\n**Cc:** Linda Marsh <linda.marsh@northwindlogistics.com>\n**Subject:** Re: Security questionnaire \u2014 Tensile\n\nDana,\n\nAppreciated \u2014 that's a more useful response than most.\n\nAssessment: no blocking findings for continued use this term. Two items go on our remediation register.\n\n1. **Federated identity (SAML).** Our tenant-wide Okta consolidation completes at the end of Q3. Vendors without SAML get written up in the quarterly access audit from that point.\n2. **Audit log export.** Twelve months retention, customer-initiated, machine-readable.\n\nThe absent SOC 2 is noted but not blocking given the compensating controls you've described.\n\nLinda will pick up timelines with your commercial team \u2014 this is a requirements conversation now, not a security one.\n\nKarin",
+    "_file": "northwind-security-review.md"
+  },
+  {
+    "id": "gmail-investor-update-2026-06",
+    "source": "gmail",
+    "type": "email",
+    "tier": "signal",
+    "load_bearing": true,
+    "subject": "Tensile \u2014 June update",
+    "thread_id": "t-0798",
+    "date": "2026-07-06",
+    "reporting_period": "2026-06",
+    "participants": [
+      "Ravi Menon <ravi@tensile.dev>",
+      "investors@tensile.dev"
+    ],
+    "facts": [
+      "June 2026 ARR $940,000, up 9.3% month over month \u2014 growth decelerated",
+      "June MRR $78,300",
+      "June net burn $181,000",
+      "Cash $1.72M, runway 9 months",
+      "56 customers, 13 people",
+      "Q2 board meeting held 18 June 2026",
+      "First Aster Ventures meeting 4 June 2026",
+      "Northwind renewal flagged as a risk"
+    ],
+    "body": "**From:** Ravi Menon <ravi@tensile.dev>\n**To:** investors@tensile.dev\n**Date:** 6 July 2026, 09:05\n**Subject:** Tensile \u2014 June update\n\nEveryone,\n\nSofter month than the last four, and I want to be straight about why.\n\n**Metrics**\n\n- ARR: $940,000 (+9.3% MoM)\n- MRR: $78,300\n- Net burn: $181,000\n- Cash: $1.72M\n- Runway: 9 months\n- Customers: 56\n- Team: 13\n\n**What went well**\n\nQ2 board meeting on 18 June. We approved the Series A raise formally and set a target of $12M.\n\nFirst conversation with Aster Ventures on 4 June went well \u2014 James has spent real time in this category and asked better questions than most. Several other conversations in flight.\n\nTracing GA work is on schedule for Q3.\n\n**What didn't**\n\nGrowth decelerated to 9.3% from an average of about 11.5% over the previous three months. Two things caused it, and neither is a surprise once you look.\n\nFirst, only one of the two deals that slipped from May actually closed in June. The other is still in security review.\n\nSecond, self-serve conversion dipped back to 5.4% after a pricing page change we made mid-month. We've reverted it.\n\nSeparately, and more concerning than either: our largest account, Northwind, has enterprise requirements tied to their renewal at the end of September. We are working through what that means. I'd rather flag it now than in the September update.\n\n**Asks**\n\nIntroductions to funds that lead at $10-15M. We have good conversations going but I'd like more shots on goal before we're in a position where we need one of them to say yes.\n\nRavi Menon\nCEO, Tensile",
+    "_file": "investor-update-2026-06.md"
+  },
+  {
+    "id": "gmail-investor-update-2026-07",
+    "source": "gmail",
+    "type": "email",
+    "tier": "signal",
+    "load_bearing": true,
+    "subject": "Tensile \u2014 July update",
+    "thread_id": "t-0851",
+    "date": "2026-08-04",
+    "reporting_period": "2026-07",
+    "participants": [
+      "Ravi Menon <ravi@tensile.dev>",
+      "investors@tensile.dev",
+      "Priya Kothari <priya@fernpath.vc>"
+    ],
+    "facts": [
+      "July 2026 ARR $1,040,000, up 10.6% month over month \u2014 crossed $1M",
+      "July MRR $86,700",
+      "July net burn $188,000",
+      "Cash $1.53M, runway 8 months",
+      "61 customers, 14 people",
+      "Fernpath term sheet received 22 July 2026, $12M at $52M post",
+      "Exclusivity expires 21 August 2026",
+      "Elena Vasquez reference checks completed 30 July 2026"
+    ],
+    "body": "**From:** Ravi Menon <ravi@tensile.dev>\n**To:** investors@tensile.dev\n**Cc:** Priya Kothari <priya@fernpath.vc>\n**Date:** 4 August 2026, 07:20\n**Subject:** Tensile \u2014 July update\n\nEveryone,\n\nTwo pieces of news this month, one of them significant. Adding Priya from Fernpath to this list going forward.\n\n**Metrics**\n\n- ARR: $1,040,000 (+10.6% MoM)\n- MRR: $86,700\n- Net burn: $188,000\n- Cash: $1.53M\n- Runway: 8 months\n- Customers: 61\n- Team: 14\n\n**What went well**\n\nWe crossed $1M ARR. It took twenty-nine months and I'm aware it's an arbitrary line, but it's the one people ask about.\n\nWe received a term sheet from Fernpath Capital on 22 July \u2014 $12M at $52M post-money. Exclusivity runs thirty days, so through 21 August. Priya and her team moved faster and with more conviction than anyone else we spoke to, and the diligence process so far has been genuinely useful rather than extractive.\n\nGrowth recovered to 10.6% after the June dip. The pricing page revert did most of that.\n\nReference checks on our lead Head of Engineering candidate came back on 30 July and were strong.\n\n**What didn't**\n\nBurn is up again and runway is now 8 months. That's fine given where the raise is, but it does mean the raise has to land.\n\nThe Northwind situation I flagged in June has not improved. Their renewal is 30 September and there is a commitment on the table that I'm not confident we can meet on the timeline that was given. Dana and I are working through options this week.\n\n**Asks**\n\nIf Priya's team reaches out for reference calls over the next two weeks, I'd be grateful for quick responses. Short window.\n\nRavi Menon\nCEO, Tensile",
+    "_file": "investor-update-2026-07.md"
+  },
+  {
+    "id": "gmail-investor-update-2026-02",
+    "source": "gmail",
+    "type": "email",
+    "tier": "signal",
+    "load_bearing": true,
+    "subject": "Tensile \u2014 February update",
+    "thread_id": "t-0612",
+    "date": "2026-03-03",
+    "reporting_period": "2026-02",
+    "participants": [
+      "Ravi Menon <ravi@tensile.dev>",
+      "investors@tensile.dev"
+    ],
+    "facts": [
+      "February 2026 ARR $620,000",
+      "February MRR $51,700",
+      "February net burn $155,000",
+      "Cash $2.40M, runway 15 months",
+      "38 customers, 11 people"
+    ],
+    "body": "**From:** Ravi Menon <ravi@tensile.dev>\n**To:** investors@tensile.dev\n**Date:** 3 March 2026, 08:12\n**Subject:** Tensile \u2014 February update\n\nEveryone,\n\nFebruary in numbers, then the detail.\n\n**Metrics**\n\n- ARR: $620,000 (up ~11% on January)\n- MRR: $51,700\n- Net burn: $155,000\n- Cash: $2.40M\n- Runway: 15 months\n- Customers: 38\n- Team: 11\n\n**What went well**\n\nLoad testing continues to pull its weight \u2014 most of the month's new ARR came from teams who found us while trying to stress-test a release and stayed for the monitoring. Two mid-market accounts upgraded off the entry tier without us asking, which is the first time that's happened twice in one month.\n\nDana's team shipped the results-diffing feature that a handful of customers had been asking for since December. Early signal is good; three accounts have started using it in CI.\n\n**What didn't**\n\nOur self-serve trial-to-paid conversion sat at 4.1%, which is roughly where it's been since October. We've been treating that as acceptable and I no longer think it is. Onboarding is the suspect \u2014 people get through signup and then stall before running a meaningful test.\n\n**Asks**\n\nIntroductions to platform engineering and SRE leaders at companies over 200 engineers. That's where our best-fit accounts have come from, and cold outbound into that group has been slow going.\n\nThanks as always,\n\nRavi Menon\nCEO, Tensile",
+    "_file": "investor-update-2026-02.md"
+  },
+  {
+    "id": "gmail-investor-update-2026-05",
+    "source": "gmail",
+    "type": "email",
+    "tier": "signal",
+    "load_bearing": true,
+    "subject": "Tensile \u2014 May update",
+    "thread_id": "t-0744",
+    "date": "2026-06-03",
+    "reporting_period": "2026-05",
+    "participants": [
+      "Ravi Menon <ravi@tensile.dev>",
+      "investors@tensile.dev"
+    ],
+    "facts": [
+      "May 2026 ARR $860,000, up 11.7% month over month",
+      "May MRR $71,700",
+      "May net burn $175,000",
+      "Cash $1.90M, runway 11 months",
+      "52 customers, 13 people",
+      "Head of Engineering search opened in May 2026"
+    ],
+    "body": "**From:** Ravi Menon <ravi@tensile.dev>\n**To:** investors@tensile.dev\n**Date:** 3 June 2026, 08:30\n**Subject:** Tensile \u2014 May update\n\nAll,\n\n**Metrics**\n\n- ARR: $860,000 (+11.7% MoM)\n- MRR: $71,700\n- Net burn: $175,000\n- Cash: $1.90M\n- Runway: 11 months\n- Customers: 52\n- Team: 13\n\n**What went well**\n\nFive net new again, and one of them is our second-largest account by ACV. Tracing came out of beta into general availability planning for Q3.\n\nWe opened the Head of Engineering search this month. Dana has been carrying both the architecture and the people side since we started and it isn't sustainable \u2014 she's spending more time on one-to-ones than on the product. First candidates are in process.\n\nThe compensation band problem from April is addressed. We moved the senior engineering band up by roughly 12% and closed the backend hire within three weeks of doing so.\n\n**What didn't**\n\nTwo enterprise deals that we had forecast for May slipped into June. Neither is lost, but both stalled in security review \u2014 one on SSO, one on data residency. This is becoming a pattern and it's the clearest signal yet that enterprise readiness is now a revenue blocker rather than a roadmap nicety.\n\n**Asks**\n\nHead of Engineering candidates. Series C-stage director or a strong staff engineer ready to step up, ideally with distributed systems depth. Referrals very welcome.\n\nRavi Menon\nCEO, Tensile",
+    "_file": "investor-update-2026-05.md"
+  },
+  {
+    "id": "gmail-metrics-snapshot-2026-08-07",
+    "source": "gmail",
+    "type": "email",
+    "tier": "supporting",
+    "subject": "Weekly numbers \u2014 w/c 3 August",
+    "thread_id": "t-0864",
+    "date": "2026-08-07",
+    "participants": [
+      "Ravi Menon <ravi@tensile.dev>",
+      "leadership@tensile.dev"
+    ],
+    "body": "**From:** Ravi Menon <ravi@tensile.dev>\n**To:** leadership@tensile.dev\n**Date:** 7 August 2026, 17:20\n**Subject:** Weekly numbers \u2014 w/c 3 August\n\n| | This week |\n|---|---|\n| ARR (running) | $1,065,000 |\n| New MRR this week | $2,200 |\n| Churn this week | $0 |\n| Customers | 63 |\n| Trials started | 29 |\n| Trials converted | 2 |\n\nDiligence is consuming most of my week and will for the next fortnight. If something needs me, say so directly rather than waiting.\n\nTracing GA a week today.\n\nRavi",
+    "_file": "metrics-snapshot-2026-08-07.md"
+  },
+  {
+    "id": "gmail-fernpath-term-sheet",
+    "source": "gmail",
+    "type": "thread",
+    "tier": "signal",
+    "load_bearing": true,
+    "subject": "Tensile \u2014 term sheet",
+    "thread_id": "t-0834",
+    "date": "2026-07-29",
+    "date_range": "2026-07-22..2026-07-29",
+    "participants": [
+      "Priya Kothari <priya@fernpath.vc>",
+      "Ravi Menon <ravi@tensile.dev>"
+    ],
+    "facts": [
+      "Fernpath term sheet delivered 22 July 2026",
+      "$12M at $52M post-money",
+      "30-day exclusivity expiring 21 August 2026",
+      "Option pool negotiated from 12% to 10.5%",
+      "Fernpath takes one board seat; board goes to five with independent seat still vacant"
+    ],
+    "body": "## Message 1 \u2014 22 July 2026, 16:48\n\n**From:** Priya Kothari <priya@fernpath.vc>\n**To:** Ravi Menon <ravi@tensile.dev>\n**Subject:** Tensile \u2014 term sheet\n\nRavi,\n\nAttached. We're proposing $12M at $52M post-money, with a 12% option pool established pre-close.\n\nWe'd take one board seat \u2014 I'd sit on it \u2014 taking the board to five with the independent seat still to fill. Standard 1x non-participating preference, no anti-dilution beyond broad-based weighted average.\n\nExclusivity is thirty days from signature, so through 21 August if you sign this week.\n\nI'll say the obvious thing: we moved quickly because we think the enterprise motion you're about to run is the whole story here, and we'd rather be early to it than tidy. Take the time you need on the terms, but I don't want the timeline to be the reason this doesn't work.\n\nPriya Kothari\nFernpath Capital\n\n---\n\n## Message 2 \u2014 23 July 2026, 08:05\n\n**From:** Ravi Menon <ravi@tensile.dev>\n**To:** Priya Kothari <priya@fernpath.vc>\n**Subject:** Re: Tensile \u2014 term sheet\n\nPriya,\n\nReceived, thank you. Genuinely pleased.\n\nGive me until Monday to go through it properly with Dana and with Nadia. One thing I can flag now \u2014 the 12% pool coming out of pre-money is doing a lot of quiet work, and I'd like to talk about that specifically rather than have it be the thing we discover we disagree about in week three.\n\nRavi\n\n---\n\n## Message 3 \u2014 27 July 2026, 11:32\n\n**From:** Ravi Menon <ravi@tensile.dev>\n**To:** Priya Kothari <priya@fernpath.vc>\n**Subject:** Re: Tensile \u2014 term sheet\n\nPriya,\n\nThree things, in order of how much I care.\n\n**Option pool.** 12% pre-money is effectively a $6M valuation adjustment dressed as an operational number. We have a hiring plan for the next eighteen months \u2014 Head of Engineering, three engineers, two on the commercial side. That plan needs about 6.5%. Even with room for error, 12% is more than we can defend. I'd like to land at 10%.\n\n**Board.** No issue with the seat. I would like us to commit to filling the independent seat within six months of close rather than leaving it open indefinitely. We've had it vacant since the seed and it hasn't served us well.\n\n**Preference and anti-dilution.** No objection, both are as expected.\n\nEverything else I'm comfortable with.\n\nRavi\n\n---\n\n## Message 4 \u2014 29 July 2026, 15:10\n\n**From:** Priya Kothari <priya@fernpath.vc>\n**To:** Ravi Menon <ravi@tensile.dev>\n**Subject:** Re: Tensile \u2014 term sheet\n\nRavi,\n\nReasonable on all three.\n\nPool: we can go to 10.5%. Below that I'd be arguing with my own partnership about a hiring plan I can't underwrite, and I'd rather spend that credibility on something else.\n\nBoard: happy to write the six-month commitment into the docs. Agreed it shouldn't sit empty.\n\nPreference and anti-dilution stand as drafted.\n\nIf 10.5% works, sign and we'll start diligence Monday. I'd like reference calls in the first two weeks \u2014 customers, and two of your investors.\n\nPriya",
+    "_file": "fernpath-term-sheet.md"
+  },
+  {
+    "id": "gmail-aster-competing-interest",
+    "source": "gmail",
+    "type": "thread",
+    "tier": "signal",
+    "subject": "Following up \u2014 Tensile",
+    "thread_id": "t-0776",
+    "date": "2026-07-24",
+    "date_range": "2026-06-04..2026-07-24",
+    "participants": [
+      "James Okonkwo <james@asterventures.com>",
+      "Ravi Menon <ravi@tensile.dev>"
+    ],
+    "facts": [
+      "First Aster meeting 4 June 2026",
+      "Aster indicated $10M at $45M post-money, verbally, never issued a term sheet",
+      "Ravi informed Aster of the Fernpath term sheet and exclusivity on 24 July 2026"
+    ],
+    "body": "## Message 1 \u2014 4 June 2026, 17:22\n\n**From:** James Okonkwo <james@asterventures.com>\n**To:** Ravi Menon <ravi@tensile.dev>\n**Subject:** Following up \u2014 Tensile\n\nRavi,\n\nGood conversation this afternoon, thanks for the time.\n\nThe thing I keep coming back to is your net revenue retention. 118% at your ACV, in a category where most companies are fighting to hold 105%, is the number that made me want the meeting in the first place and it held up under questioning.\n\nWhat I'd want to understand better before we go further: how much of the expansion is seat growth versus module attach, and what happens to both when you hit accounts that need enterprise controls you don't have yet.\n\nCould you send the last six months of cohort data? Happy to sign whatever you need first.\n\nJames Okonkwo\nAster Ventures\n\n---\n\n## Message 2 \u2014 22 June 2026, 10:14\n\n**From:** James Okonkwo <james@asterventures.com>\n**To:** Ravi Menon <ravi@tensile.dev>\n**Subject:** Re: Following up \u2014 Tensile\n\nRavi,\n\nThanks for the cohort data \u2014 it answered the question. Module attach is doing more of the work than I expected, which I read as a good sign.\n\nWhere we'd be, directionally: something around $10M at $45M post. I want to be transparent that I'd need to bring this to the full partnership on 9 July before that becomes anything you can rely on, and our process from there is another three to four weeks.\n\nI know that's slower than you'd like. I'd rather tell you the real timeline than a flattering one.\n\nJames\n\n---\n\n## Message 3 \u2014 24 July 2026, 09:40\n\n**From:** Ravi Menon <ravi@tensile.dev>\n**To:** James Okonkwo <james@asterventures.com>\n**Subject:** Re: Following up \u2014 Tensile\n\nJames,\n\nI owe you a straight answer rather than a slow fade.\n\nWe received a term sheet on Tuesday and I expect to sign it this week. It carries thirty days of exclusivity, so I can't continue a conversation with you during that period.\n\nI want to be clear that this isn't a comment on Aster or on your process. You were more useful to think with than anyone else we spoke to, and the cohort question you asked in June ended up reshaping how we present the business. The timing simply didn't line up.\n\nIf circumstances change I'll be in touch immediately.\n\nRavi\n\n---\n\n## Message 4 \u2014 24 July 2026, 12:05\n\n**From:** James Okonkwo <james@asterventures.com>\n**To:** Ravi Menon <ravi@tensile.dev>\n**Subject:** Re: Following up \u2014 Tensile\n\nUnderstood, and appreciated \u2014 the fade is the norm, so thank you for not doing it.\n\nFor what it's worth I think you're raising into the right moment. Keep me on the update list if you're willing.\n\nCongratulations.\n\nJames",
+    "_file": "aster-competing-interest.md"
+  },
+  {
+    "id": "gmail-comp-discussion-vasquez",
+    "source": "gmail",
+    "type": "thread",
+    "tier": "signal",
+    "load_bearing": true,
+    "subject": "Next steps",
+    "thread_id": "t-0856",
+    "date": "2026-08-06",
+    "date_range": "2026-08-03..2026-08-06",
+    "participants": [
+      "Elena Vasquez <elena.vasquez@protonmail.com>",
+      "Ravi Menon <ravi@tensile.dev>"
+    ],
+    "facts": [
+      "Elena Vasquez asking $265,000 base and 0.9% equity",
+      "Current compensation $248,000 base plus bonus",
+      "Approved band is $240,000 and 0.8% \u2014 Elena is above both",
+      "Eight week notice period",
+      "Competing conversation in progress, not an offer"
+    ],
+    "body": "## Message 1 \u2014 3 August 2026, 20:14\n\n**From:** Elena Vasquez <elena.vasquez@protonmail.com>\n**To:** Ravi Menon <ravi@tensile.dev>\n**Subject:** Next steps\n\nRavi,\n\nThank you for Thursday \u2014 and please pass on my thanks to Dana. The design review conversation was the most enjoyable interview I've had in a long time, largely because nobody was performing.\n\nI've thought about it over the weekend and I want to be straightforward about where I am, because I'd rather we find out now if this doesn't work.\n\nI'm at $248,000 base today with a bonus that has paid out around 15% for the last two years. I'm not unhappy, which I mention only so you know I'm not looking to escape something. What I don't have is scope \u2014 I run three teams inside an org where the interesting architectural decisions were made two years before I arrived.\n\nFor a move at this stage I'd be looking at **$265,000 base and 0.9%**. The equity matters more to me than the base, and I'd trade in that direction if it helps.\n\nI should also say there's one other conversation in progress. It's early and there's no offer, and I'm not raising it as leverage \u2014 I'd just rather you hear it from me.\n\nMy notice is eight weeks, which I know is longer than ideal.\n\nElena Vasquez\n\n---\n\n## Message 2 \u2014 6 August 2026, 08:22\n\n**From:** Ravi Menon <ravi@tensile.dev>\n**To:** Elena Vasquez <elena.vasquez@protonmail.com>\n**Subject:** Re: Next steps\n\nElena,\n\nThank you for being direct \u2014 it's genuinely easier this way.\n\nI'll be equally direct in return. The band we approved for this role in May is $240,000 base and up to 0.8%. Your number is above both, and anything above the band needs board approval before I can put an offer out.\n\nThat isn't a no. It means I need to have a conversation with Nadia, and I'd rather do that with a clear view of what we'd be getting than argue for a number in the abstract. Your references came back on 30 July and they were the strongest I've taken in some time \u2014 two people independently described the same thing about how you handled a re-platforming, which was the specific risk we were worried about.\n\nThe eight weeks I'm relaxed about. We've waited three months already; another two won't change anything.\n\nOur decision date is 22 August. I'll come back to you well before then.\n\nRavi",
+    "_file": "comp-discussion-vasquez.md"
+  },
+  {
+    "id": "gmail-comp-discussion-brennan",
+    "source": "gmail",
+    "type": "thread",
+    "tier": "signal",
+    "load_bearing": true,
+    "subject": "Thanks + where I'm at",
+    "thread_id": "t-0858",
+    "date": "2026-08-07",
+    "date_range": "2026-08-04..2026-08-07",
+    "participants": [
+      "Tom Brennan <t.brennan@fastmail.com>",
+      "Ravi Menon <ravi@tensile.dev>"
+    ],
+    "facts": [
+      "Tom Brennan asking $225,000 base and 0.6% equity",
+      "Current compensation $198,000 base",
+      "Both figures inside the approved $240,000 / 0.8% band",
+      "Four week notice period",
+      "References not yet completed"
+    ],
+    "body": "## Message 1 \u2014 4 August 2026, 19:38\n\n**From:** Tom Brennan <t.brennan@fastmail.com>\n**To:** Ravi Menon <ravi@tensile.dev>\n**Subject:** Thanks + where I'm at\n\nRavi,\n\nThanks for the loop last week. The planning case study was the part I enjoyed most, which probably tells you something about how I'd want to spend my time.\n\nBeing upfront on numbers so we're not circling. I'm at $198,000 base now, no meaningful equity \u2014 the company recapped in 2024 and what I hold is effectively underwater.\n\nFor this role I'd be looking at **$225,000 base and 0.6%**.\n\nI'll also say the honest thing: this would be a step up for me. I've led six engineers, but informally, and I've never owned a hiring plan or a quarterly planning process end to end. I think I'm ready and I'd rather tell you that plainly than have you find out in month three. If you're weighing me against someone who has already done it, I understand which way that goes.\n\nNotice is four weeks.\n\nTom Brennan\n\n---\n\n## Message 2 \u2014 7 August 2026, 09:05\n\n**From:** Ravi Menon <ravi@tensile.dev>\n**To:** Tom Brennan <t.brennan@fastmail.com>\n**Subject:** Re: Thanks + where I'm at\n\nTom,\n\nAppreciate the candour, and it isn't the disadvantage you might think it is. The people who tell me what they haven't done yet are usually the ones who go on to do it.\n\nBoth of your numbers sit inside the band we approved for this role, so there's no structural obstacle from my side.\n\nWhere we are: we have two candidates at final stage and a decision date of 22 August. Your references are the outstanding item \u2014 could you send me three contacts this week, ideally including someone who has reported to you even informally?\n\nI'll be back to you before the 22nd either way.\n\nRavi",
+    "_file": "comp-discussion-brennan.md"
+  },
+  {
+    "id": "gmail-bastion-soc2-followup",
+    "source": "gmail",
+    "type": "thread",
+    "tier": "supporting",
+    "subject": "Following up on the report",
+    "thread_id": "t-0820",
+    "date": "2026-07-21",
+    "participants": [
+      "Owen Fitzgerald <owen@bastionfreight.com>",
+      "Marcus Oyelaran <marcus@tensile.dev>"
+    ],
+    "body": "## Message 1 \u2014 20 July 2026, 11:20\n\n**From:** Owen Fitzgerald <owen@bastionfreight.com>\n**To:** Marcus Oyelaran <marcus@tensile.dev>\n**Subject:** Following up on the report\n\nMarcus,\n\nChecking in on the SOC 2. You said in May you'd let me know once you had an auditor confirmed.\n\nI want to expand Tensile to the other two engineering groups here, and I can't put it through our procurement process without the report. So this is a growth conversation as much as a compliance one \u2014 there's budget waiting on it.\n\nOwen Fitzgerald\nCTO, Bastion Freight\n\n---\n\n## Message 2 \u2014 21 July 2026, 09:35\n\n**From:** Marcus Oyelaran <marcus@tensile.dev>\n**To:** Owen Fitzgerald <owen@bastionfreight.com>\n**Subject:** Re: Following up on the report\n\nOwen,\n\nAuditor confirmed. Observation window opens in October, report mid-2027.\n\nI'm not going to pretend that's the answer you wanted. If there's a route through your procurement using compensating evidence \u2014 questionnaire, pen test, DPA \u2014 I'd like to try it, because waiting until mid-2027 to have this conversation doesn't serve either of us.\n\nCan we get thirty minutes with whoever owns that policy?\n\nMarcus",
+    "_file": "bastion-soc2-followup.md"
+  },
+  {
+    "id": "gmail-calder-soc2-question",
+    "source": "gmail",
+    "type": "thread",
+    "tier": "supporting",
+    "subject": "SOC 2 timeline",
+    "thread_id": "t-0803",
+    "date": "2026-07-09",
+    "participants": [
+      "Priyanka Rao <p.rao@caldersystems.com>",
+      "Marcus Oyelaran <marcus@tensile.dev>"
+    ],
+    "body": "## Message 1 \u2014 8 July 2026, 13:15\n\n**From:** Priyanka Rao <p.rao@caldersystems.com>\n**To:** Marcus Oyelaran <marcus@tensile.dev>\n**Subject:** SOC 2 timeline\n\nMarcus,\n\nOur compliance team is doing the annual vendor sweep and Tensile is flagged as not having a SOC 2 report.\n\nIt isn't blocking for this term \u2014 our renewal isn't until January \u2014 but I need to tell them something with a date on it.\n\nWhere are you with it?\n\nPriyanka Rao\nHead of Platform, Calder Systems\n\n---\n\n## Message 2 \u2014 9 July 2026, 08:50\n\n**From:** Marcus Oyelaran <marcus@tensile.dev>\n**To:** Priyanka Rao <p.rao@caldersystems.com>\n**Subject:** Re: SOC 2 timeline\n\nPriyanka,\n\nHonest answer: auditor selected, Type II observation window starts in October. That's a twelve month window, so a report lands around mid-2027.\n\nI know that's later than you'd like. What I can offer in the meantime is our completed security questionnaire and last November's penetration test summary, which covers most of what your compliance team is actually trying to establish.\n\nHappy to get on a call with them directly if that's easier.\n\nMarcus",
+    "_file": "calder-soc2-question.md"
+  },
+  {
+    "id": "gmail-investor-thornhill",
+    "source": "gmail",
+    "type": "thread",
+    "tier": "supporting",
+    "subject": "Tensile \u2014 intro from Nadia",
+    "thread_id": "t-0762",
+    "date": "2026-06-26",
+    "participants": [
+      "Duncan Reeve <duncan@thornhillvc.com>",
+      "Ravi Menon <ravi@tensile.dev>"
+    ],
+    "body": "## Message 1 \u2014 19 June 2026, 11:30\n\n**From:** Duncan Reeve <duncan@thornhillvc.com>\n**To:** Ravi Menon <ravi@tensile.dev>\n**Subject:** Tensile \u2014 intro from Nadia\n\nRavi,\n\nNadia passed on your details. We invest at Series A into infrastructure and developer tools, cheque size $8\u201315M.\n\nHappy to find time. Before we do, could you send the deck and a summary of ARR, growth rate and net retention? Saves us both a call if we're not the right fit.\n\nDuncan Reeve\nThornhill Ventures\n\n---\n\n## Message 2 \u2014 26 June 2026, 15:45\n\n**From:** Duncan Reeve <duncan@thornhillvc.com>\n**To:** Ravi Menon <ravi@tensile.dev>\n**Subject:** Re: Tensile \u2014 intro from Nadia\n\nRavi,\n\nThanks for sending this over, and apologies for the slow reply.\n\nWe're going to pass. The business looks good and the retention number is genuinely strong \u2014 this is a fit question rather than a quality one. We made an investment in an adjacent category eight months ago and our partnership takes a firm line on anything that could be read as competitive by either portfolio company.\n\nI'd rather tell you now than take three more meetings and arrive at the same place.\n\nIf that conflict resolves I'll be back in touch.\n\nDuncan",
+    "_file": "investor-thornhill.md"
+  },
+  {
+    "id": "gmail-investor-kestrel",
+    "source": "gmail",
+    "type": "thread",
+    "tier": "supporting",
+    "subject": "Following our call",
+    "thread_id": "t-0787",
+    "date": "2026-07-08",
+    "participants": [
+      "Ana S\u00f8rensen <ana@kestrelcapital.com>",
+      "Ravi Menon <ravi@tensile.dev>"
+    ],
+    "body": "## Message 1 \u2014 2 July 2026, 09:20\n\n**From:** Ana S\u00f8rensen <ana@kestrelcapital.com>\n**To:** Ravi Menon <ravi@tensile.dev>\n**Subject:** Following our call\n\nRavi,\n\nGood call yesterday. A few follow-ups before I take this internally:\n\n1. Gross retention, not just net \u2014 I want to see the churn underneath the expansion\n2. Sales efficiency: CAC payback by channel\n3. What proportion of ARR sits in accounts above $50k\n\nAna S\u00f8rensen\nKestrel Capital\n\n---\n\n## Message 2 \u2014 8 July 2026, 14:10\n\n**From:** Ana S\u00f8rensen <ana@kestrelcapital.com>\n**To:** Ravi Menon <ravi@tensile.dev>\n**Subject:** Re: Following our call\n\nRavi,\n\nDiscussed internally. We're interested but not at the pace you're moving at.\n\nBeing direct about why: our process for a new position takes six to eight weeks and involves two partner meetings and a technical diligence session with an outside advisor. You've told me you expect to be signed inside a month. I don't want to hold a slot in your process that I can't fill in time.\n\nIf your timeline slips, or if the current conversation doesn't convert, call me and we'll move as fast as we're able.\n\nAna",
+    "_file": "investor-kestrel.md"
+  },
+  {
+    "id": "gmail-investor-oakmont-pass",
+    "source": "gmail",
+    "type": "thread",
+    "tier": "supporting",
+    "subject": "Oakmont \u2014 following up",
+    "thread_id": "t-0793",
+    "date": "2026-07-03",
+    "participants": [
+      "Rebecca Lindley <r.lindley@oakmontgrowth.com>",
+      "Ravi Menon <ravi@tensile.dev>"
+    ],
+    "body": "## Message 1 \u2014 3 July 2026, 11:50\n\n**From:** Rebecca Lindley <r.lindley@oakmontgrowth.com>\n**To:** Ravi Menon <ravi@tensile.dev>\n**Subject:** Oakmont \u2014 following up\n\nRavi,\n\nThank you for the time over the last three weeks. We've decided not to proceed.\n\nThe reason is stage rather than substance. We typically enter at $3M ARR and above, and while we do make exceptions, this wasn't going to be one \u2014 the partnership wanted more evidence of the enterprise motion working before underwriting it, and that evidence is roughly two quarters away for you.\n\nMy honest read: come back to us when enterprise is fifty percent of new ARR and this is a much shorter conversation.\n\nRebecca Lindley\nOakmont Growth\n\n---\n\n## Message 2 \u2014 3 July 2026, 15:30\n\n**From:** Ravi Menon <ravi@tensile.dev>\n**To:** Rebecca Lindley <r.lindley@oakmontgrowth.com>\n**Subject:** Re: Oakmont \u2014 following up\n\nRebecca,\n\nUnderstood, and it's a fair read. Two quarters is about right.\n\nI'll take you up on that when we're there.\n\nRavi",
+    "_file": "investor-oakmont-pass.md"
+  },
+  {
+    "id": "gmail-calder-renewal-early",
+    "source": "gmail",
+    "type": "thread",
+    "tier": "supporting",
+    "subject": "Calder renewal \u2014 early conversation",
+    "thread_id": "t-0855",
+    "date": "2026-08-05",
+    "participants": [
+      "Priyanka Rao <p.rao@caldersystems.com>",
+      "Marcus Oyelaran <marcus@tensile.dev>"
+    ],
+    "body": "## Message 1 \u2014 4 August 2026, 15:40\n\n**From:** Marcus Oyelaran <marcus@tensile.dev>\n**To:** Priyanka Rao <p.rao@caldersystems.com>\n**Subject:** Calder renewal \u2014 early conversation\n\nPriyanka,\n\nYour renewal is 1 January, which feels far away but our finance year-end planning happens in October, so I'd rather have the conversation now.\n\nCurrent is $62,000. I'd expect to propose an increase, but I want to understand your plans before putting a number on it \u2014 are you expecting to add teams next year?\n\nMarcus\n\n---\n\n## Message 2 \u2014 5 August 2026, 10:20\n\n**From:** Priyanka Rao <p.rao@caldersystems.com>\n**To:** Marcus Oyelaran <marcus@tensile.dev>\n**Subject:** Re: Calder renewal \u2014 early conversation\n\nMarcus,\n\nYes, two more teams, probably January. That's roughly twenty more engineers.\n\nTwo things that affect whether it happens on time.\n\nFirst, the SLA amendment takes effect 1 October and I'll want to see a clean quarter against it before I expand.\n\nSecond, access management. Right now every engineer authenticates individually and I'm approving accounts by hand. At twenty more people that becomes untenable. I raised this in May and I don't think anything's changed.\n\nPriyanka",
+    "_file": "calder-renewal-early.md"
+  },
+  {
+    "id": "gmail-meridian-renewal",
+    "source": "gmail",
+    "type": "thread",
+    "tier": "supporting",
+    "subject": "Renewal \u2014 all good",
+    "thread_id": "t-0742",
+    "date": "2026-06-01",
+    "participants": [
+      "Sam Okafor <s.okafor@meridiangrid.com>",
+      "Marcus Oyelaran <marcus@tensile.dev>"
+    ],
+    "body": "## Message 1 \u2014 29 May 2026, 16:10\n\n**From:** Marcus Oyelaran <marcus@tensile.dev>\n**To:** Sam Okafor <s.okafor@meridiangrid.com>\n**Subject:** Renewal \u2014 all good\n\nSam,\n\nYour term is up at the end of June. Same terms, $28,000, no changes proposed.\n\nAnything you want to raise before I send the paperwork?\n\nMarcus\n\n---\n\n## Message 2 \u2014 1 June 2026, 08:22\n\n**From:** Sam Okafor <s.okafor@meridiangrid.com>\n**To:** Marcus Oyelaran <marcus@tensile.dev>\n**Subject:** Re: Renewal \u2014 all good\n\nNothing to raise. Send it over.\n\nFor what it's worth, the diffing view is the reason this is an easy conversation. Before Tensile we found performance regressions when a customer complained. Now we find them in the PR. Nobody else showed us what changed.\n\nOne request for the wishlist, no urgency: scheduled test windows. We'd like heavy runs to only fire overnight.\n\nSam Okafor\nEngineering Manager, Meridian Grid",
+    "_file": "meridian-renewal.md"
+  },
+  {
+    "id": "gmail-ravelin-quarterly-review",
+    "source": "gmail",
+    "type": "thread",
+    "tier": "supporting",
+    "subject": "Q2 usage review",
+    "thread_id": "t-0757",
+    "date": "2026-06-09",
+    "participants": [
+      "Nour Haddad <n.haddad@ravelinhealth.com>",
+      "Marcus Oyelaran <marcus@tensile.dev>"
+    ],
+    "body": "## Message 1 \u2014 9 June 2026, 10:15\n\n**From:** Marcus Oyelaran <marcus@tensile.dev>\n**To:** Nour Haddad <n.haddad@ravelinhealth.com>\n**Subject:** Q2 usage review\n\nNour,\n\nQuarterly review as agreed at onboarding. Summary for the quarter:\n\n| | |\n|---|---|\n| Test runs | 4,180 |\n| Active users | 14 of 16 licensed |\n| Regressions caught pre-merge | 31 |\n| Average run duration | 6m 40s |\n\nThe thirty-one regressions is the number I'd put in front of your leadership. Two of those were in the payments path.\n\nAnything you want to raise?\n\nMarcus\n\n---\n\n## Message 2 \u2014 9 June 2026, 16:30\n\n**From:** Nour Haddad <n.haddad@ravelinhealth.com>\n**To:** Marcus Oyelaran <marcus@tensile.dev>\n**Subject:** Re: Q2 usage review\n\nMarcus,\n\nUseful, thank you.\n\nTwo things. We're a healthcare company so data residency comes up in every review \u2014 we're UK only at the moment which is fine, but if we expand into the EU next year I'll need to know your position.\n\nSecond, the two unused licences are deliberate. We're holding them for a team that starts in September.\n\nNour Haddad\nRavelin Health",
+    "_file": "ravelin-quarterly-review.md"
+  },
+  {
+    "id": "gmail-backend-hire-offer-may",
+    "source": "gmail",
+    "type": "thread",
+    "tier": "supporting",
+    "subject": "Offer \u2014 Senior Backend Engineer",
+    "thread_id": "t-0731",
+    "date": "2026-05-20",
+    "participants": [
+      "Sofia Almeida <sofia.almeida@posteo.net>",
+      "Dana Whitfield <dana@tensile.dev>"
+    ],
+    "body": "## Message 1 \u2014 18 May 2026, 10:00\n\n**From:** Dana Whitfield <dana@tensile.dev>\n**To:** Sofia Almeida <sofia.almeida@posteo.net>\n**Subject:** Offer \u2014 Senior Backend Engineer\n\nSofia,\n\nDelighted to make you an offer.\n\n| | |\n|---|---|\n| Role | Senior Backend Engineer |\n| Base | $158,000 |\n| Equity | 0.18%, four year vest, one year cliff |\n| Start | As soon as your notice allows |\n\nI'll be honest that this number is higher than we were offering two months ago. We lost two candidates on compensation and concluded we were the problem rather than them, so the band moved roughly 12%. You're benefiting from other people's rejections.\n\nDana\n\n---\n\n## Message 2 \u2014 20 May 2026, 08:30\n\n**From:** Sofia Almeida <sofia.almeida@posteo.net>\n**To:** Dana Whitfield <dana@tensile.dev>\n**Subject:** Re: Offer \u2014 Senior Backend Engineer\n\nDana,\n\nAccepted, and thank you for the transparency about the band \u2014 it's an unusual thing to tell a candidate and it made me more confident rather than less.\n\nFour weeks notice, so starting mid-June.\n\nSofia",
+    "_file": "backend-hire-offer-may.md"
+  },
+  {
+    "id": "gmail-northwind-support-webhooks",
+    "source": "gmail",
+    "type": "thread",
+    "tier": "supporting",
+    "subject": "Webhook deliveries failing",
+    "thread_id": "t-0771",
+    "date": "2026-06-12",
+    "participants": [
+      "Linda Marsh <linda.marsh@northwindlogistics.com>",
+      "Dana Whitfield <dana@tensile.dev>"
+    ],
+    "body": "## Message 1 \u2014 11 June 2026, 16:40\n\n**From:** Linda Marsh <linda.marsh@northwindlogistics.com>\n**To:** support@tensile.dev\n**Subject:** Webhook deliveries failing\n\nOur Slack notifications stopped yesterday afternoon. Nothing changed on our side that I'm aware of. Low urgency but it's how the team finds out about failed runs.\n\nLinda\n\n---\n\n## Message 2 \u2014 12 June 2026, 09:30\n\n**From:** Dana Whitfield <dana@tensile.dev>\n**To:** Linda Marsh <linda.marsh@northwindlogistics.com>\n**Subject:** Re: Webhook deliveries failing\n\nLinda,\n\nFound it. Your endpoint started returning 429s on Tuesday and our retry logic gives up after five attempts, then disables the webhook silently. The silent part is our bug \u2014 you should have been told.\n\nRe-enabled. I've raised a fix so that a disabled webhook sends an email rather than just stopping.\n\nSev-3, single customer. No postmortem but it's in the log.\n\nDana",
+    "_file": "northwind-support-webhooks.md"
+  },
+  {
+    "id": "gmail-noise-invoice-amazon-web-services-2026-08-04",
+    "source": "gmail",
+    "type": "email",
+    "tier": "noise",
+    "subject": "Amazon Web Services \u2014 invoice for August 2026",
+    "thread_id": "n-4023",
+    "date": "2026-08-04",
+    "participants": [
+      "Amazon Web Services <aws-receipts@amazon.com>",
+      "Ravi Menon <ravi@tensile.dev>"
+    ],
+    "body": "**From:** Amazon Web Services <aws-receipts@amazon.com>\n**To:** Ravi Menon <ravi@tensile.dev>\n**Date:** 4 August 2026\n**Subject:** Amazon Web Services \u2014 invoice for August 2026\n\nYour invoice is ready.\n\n| | |\n|---|---|\n| Account | Tensile, Inc. |\n| Period | August 2026 |\n| Amount due | $17,445.00 |\n| Payment method | Card ending 4417 |\n\nPayment will be collected automatically. No action required.\n\nView invoice in your billing dashboard.",
+    "_file": "noise-invoice-amazon-web-services-2026-08-04.md"
+  }
+]
