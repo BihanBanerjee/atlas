@@ -68,6 +68,10 @@ class Settings(BaseSettings):
     # no reason to expose them to the environment.
 
     @property
+    def corpus_dir(self) -> Path:
+        return REPO_ROOT / "data" / "corpus"
+
+    @property
     def fixtures_dir(self) -> Path:
         return REPO_ROOT / "eval" / "fixtures"
 
