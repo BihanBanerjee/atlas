@@ -19,7 +19,7 @@
     {
       "id": "q01",
       "question": "What date did Tensile promise Northwind Logistics that SAML SSO would ship?",
-      "expected_answer": "September 15, 2026.",
+      "expected_answer": "15 September 2026. The commitment was made on 11 June 2026 and was timed to put Northwind two weeks clear of their access audit and ahead of the 30 September renewal.",
       "category": "signal_lookup",
       "acceptable_sources": [
         "gmail-northwind-sso-commitment",
@@ -65,7 +65,7 @@
     {
       "id": "q05",
       "question": "When is Northwind Logistics' contract up for renewal?",
-      "expected_answer": "30 September 2026.",
+      "expected_answer": "30 September 2026. The MSA was executed on 30 September 2025 with an initial twelve-month term, at an annual fee of $84,000 for 40 named users.",
       "category": "signal_lookup",
       "acceptable_sources": [
         "gmail-northwind-renewal",
@@ -93,7 +93,7 @@
     {
       "id": "q07",
       "question": "What was Tensile's ARR in June 2026?",
-      "expected_answer": "$940,000.",
+      "expected_answer": "$940,000 — up 9.3% month over month, a deceleration from prior months, on June MRR of $78,300.",
       "category": "reranking_near_duplicate",
       "acceptable_sources": [
         "gmail-investor-update-2026-06",
@@ -107,7 +107,7 @@
     {
       "id": "q08",
       "question": "What was Tensile's ARR in July 2026?",
-      "expected_answer": "$1,040,000.",
+      "expected_answer": "$1,040,000 — up 10.6% month over month, crossing the $1M mark, on July MRR of $86,700.",
       "category": "reranking_near_duplicate",
       "acceptable_sources": [
         "gmail-investor-update-2026-07",
@@ -242,7 +242,7 @@
     {
       "id": "q18",
       "question": "What is the decision deadline for the Head of Engineering role?",
-      "expected_answer": "22 August 2026.",
+      "expected_answer": "22 August 2026. The role is at final stage with two candidates, Elena Vasquez and Tom Brennan.",
       "category": "signal_lookup",
       "acceptable_sources": [
         "notion-hiring-pipeline",
@@ -282,7 +282,7 @@
     {
       "id": "q21",
       "question": "What is the procurement deadline Northwind gave for the renewal decision?",
-      "expected_answer": "5 September 2026.",
+      "expected_answer": "5 September 2026. Linda Marsh set that as the deadline for the renewal paperwork, and requires written confirmation of the 15 September SSO date before taking it to procurement.",
       "category": "signal_lookup",
       "acceptable_sources": [
         "gmail-northwind-renewal"
@@ -303,7 +303,7 @@
     {
       "id": "q23",
       "question": "What is Bastion Freight waiting on before it will convert or expand?",
-      "expected_answer": "Bastion Freight is awaiting Tensile's SOC 2 report.",
+      "expected_answer": "Bastion Freight is waiting on Tensile's SOC 2 report. Owen Fitzgerald, their CTO, cannot put an expansion through procurement without it, and wants to extend Tensile to two further engineering groups.",
       "category": "signal_lookup",
       "acceptable_sources": [
         "gmail-bastion-soc2-followup",
