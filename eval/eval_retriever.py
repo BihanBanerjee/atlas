@@ -175,7 +175,7 @@ def main() -> None:
     hyperparameters = {
         "top_k": top_k,
         "chunk_tokens": settings.chunk_tokens,
-        "chunk_overlap": 0,
+        "chunk_overlap": settings.chunk_overlap,
         "chunk_strategy": "fixed_token_window",
         "embedded_text": "body_only",
         "embedding_model": settings.embedding_model,

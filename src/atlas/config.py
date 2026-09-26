@@ -58,9 +58,13 @@ class Settings(BaseSettings):
     # improvement came from retrieval work or from the model upgrade.
     synthesis_model: str = "claude-haiku-4-5"
 
-    # --- v0.1 retrieval parameters (deliberately naive) ---
-    chunk_tokens: int = 512
-    tokenizer_encoding: str = "cl100k_base" # matches text-embedding-3-small
+    # --- retrieval parameters ---
+    chunk_tokens: int = 750
+    # Tokens repeated from the end of one chunk at the start of the next. 0 means
+    # chunk N ends exactly where N+1 begins, and a fact split across that boundary
+    # appears whole in neither. Must be smaller than chunk_tokens.
+    chunk_overlap: int = 100
+    tokenizer_encoding: str = "cl100k_base"  # matches text-embedding-3-small
     top_k: int = 5
 
     # --- paths ---
