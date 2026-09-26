@@ -64,6 +64,7 @@ from deepeval.metrics import (
 from deepeval.test_case import LLMTestCase
 
 from atlas.config import settings
+from atlas.ingest import EMBED_FORMAT
 from atlas.retrieve import retrieve
 
 # Constants, not flags, on purpose. Swapping judges between runs moves scores for
@@ -177,7 +178,7 @@ def main() -> None:
         "chunk_tokens": settings.chunk_tokens,
         "chunk_overlap": settings.chunk_overlap,
         "chunk_strategy": "fixed_token_window",
-        "embedded_text": "body_only",
+        "embedded_text": EMBED_FORMAT,
         "embedding_model": settings.embedding_model,
         "embedding_dim": settings.embedding_dim,
         "distance": "cosine",

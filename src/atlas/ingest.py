@@ -89,8 +89,24 @@ def load_corpus() -> list[dict[str, Any]]:
             docs.append(parse_doc(path))
     return docs
 
+# What goes into the vector. Recorded with every eval run so a result can't be
+# attributed to the wrong indexing scheme -- update this when the format below
+# changes.
+EMBED_FORMAT = "body_only"
+
+
 def build_chunks(docs: list[dict[str, Any]]) -> tuple[list[str], list[dict[str, Any]]]:
-    """Flatten documents into parallel lists of chunk text and payloads."""
+    """
+    Flatten documents into parallel lists of embedding text and payloads.
+
+    Both lists hold the same chunk text. Prepending the title and date to the
+    embedded text was tried and measured worse -- contextual precision fell from
+    0.736 to 0.642 across five runs -- so the vector is built from the chunk
+    alone. The reason is the chunk-to-document ratio: 256 documents produce 263
+    chunks, so almost nothing splits and there is no lost context to restore.
+    The extra tokens only diluted the distinctive part of each vector. Worth
+    revisiting if chunks ever get small enough that documents split often.
+    """
     texts: list[str] = []
     payloads: list[dict[str, Any]] = []
 
