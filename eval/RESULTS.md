@@ -17,17 +17,19 @@ results.
 
 ## All runs
 
-| # | chunk | overlap | top_k | embedded | n | recall | Δ | precision | Δ | cost | time |
-|---|---|---|---|---|---|---|---|---|---|---|---|
-| 1 | 512 | 0 | 5 | body | 1 | 0.957 | — | 0.680 | — | $0.075 | 9s |
-| 2 | **750** | **100** | 5 | body | 3 | 0.953 | −0.004 | **0.755** | **+0.075** | $0.084 | 9s |
-| 3 | 1000 | 150 | 5 | body | 1 | 0.950 | −0.003 | 0.693 | −0.062 | $0.090 | 93s |
-| 4 | 750 | 100 | 5 | title+date | 3 | 0.934 | −0.019 | 0.642 | −0.113 | $0.081 | 9s |
-| 5a | 750 | 100 | **3** | body | 1 | **0.783** | **−0.170** | **0.837** | **+0.082** | $0.060 | 8s |
-| 5b | 750 | 100 | **8** | body | 1 | 0.942 | −0.011 | 0.716 | −0.039 | $0.115 | 27s |
+| # | chunk | ovl | top_k | embedded | reranker | n | recall | Δ | precision | Δ | cost | time |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| 1 | 512 | 0 | 5 | body | — | 1 | 0.957 | — | 0.680 | — | $0.075 | 9s |
+| 2 | 750 | 100 | 5 | body | — | 3 | 0.953 | −0.004 | 0.755 | +0.075 | $0.084 | 9s |
+| 3 | 1000 | 150 | 5 | body | — | 1 | 0.950 | −0.003 | 0.693 | −0.062 | $0.090 | 93s |
+| 4 | 750 | 100 | 5 | title+date | — | 3 | 0.934 | −0.019 | 0.642 | −0.113 | $0.081 | 9s |
+| 5a | 750 | 100 | **3** | body | — | 1 | **0.783** | **−0.170** | 0.837 | +0.082 | $0.060 | 8s |
+| 5b | 750 | 100 | **8** | body | — | 1 | 0.942 | −0.011 | 0.716 | −0.039 | $0.115 | 27s |
+| 6a | 750 | 100 | 5 | body | MiniLM-L-6 | 3 | 0.913 | −0.040 | 0.767 | +0.012 | $0.084 | 20s |
+| 6b | **750** | **100** | **5** | **body** | **bge-base** | **3** | **0.954** | **+0.001** | **0.903** | **+0.148** | $0.084 | 23s |
 
-Deltas in rows 2–4 are against row 1; rows 5a/5b against row 2. **Row 2 is the
-kept configuration.**
+Deltas in rows 2–4 are against row 1; rows 5–6 against row 2. **Row 6b is the
+kept configuration.** Rerankers see 20 candidates and return 5.
 
 ---
 
@@ -52,6 +54,23 @@ from full recall to zero (q05, q06, q09, q12) — their answer sat at rank 3–5
 Precision gained 0.082. Bad trade: a precision loss wastes tokens, a recall loss
 loses the answer.
 
+**2 → 6a · rerank with `ms-marco-MiniLM-L-6-v2`.** Precision +0.012 (inside noise),
+recall −0.040. Fixed q17's buried fact but broke q02 and q10 — net one question
+worse. On q10 it dropped `drive-financial-model-2026` (which holds the answer) for
+investor emails that merely *discuss* runway: MS MARCO trains on prose passages, so
+the model rewards text that reads like an answer over text that contains one.
+**Rejected.**
+
+**2 → 6b · rerank with `BAAI/bge-reranker-base`.** Precision **+0.148** at 2.5× the
+noise floor, recall unchanged. 278M parameters against MiniLM's 22M, trained on
+more varied data, and it has neither the prose bias nor the recall loss — q10 and
+q17 both pass. Precision pass rate 16/23 → 22/23. **Adopted.**
+
+The reranker's own scores are deterministic, so all three runs retrieved identical
+chunks and only the judge varied. Its precision spread was 0.013 against dense's
+0.059 — when the right chunk is clearly first, the judge has less to be uncertain
+about.
+
 **2 → 5b · top_k 5 → 8.** Both deltas inside the noise floor, cost +37%. Nothing
 left to find above k=5. Also hit OpenAI's 200k TPM limit — measured judge load is
 ~115k tokens at k=3, ~208k at k=5, ~333k at k=8 — and needed temporary throttling
@@ -64,8 +83,9 @@ to complete at all.
 ```
 chunk_tokens 750 · chunk_overlap 100 · top_k 5 · embedded_text body_only
 text-embedding-3-small (1536, cosine) · qdrant, 263 chunks from 256 documents
+rerank BAAI/bge-reranker-base, 20 candidates -> 5
 
-recall 0.953   precision 0.755
+recall 0.954   precision 0.903
 ```
 
 `chunk_overlap` was never isolated — only 7 documents split at 750, so its
@@ -85,11 +105,15 @@ expected effect is near zero. Untested.
 
 ## Next
 
-Tuning is exhausted — every parameter that needs no new capability has been
-swept. Every remaining precision failure reads *"the relevant node is at rank 3"*,
-which is a ranking problem no parameter addresses.
+One question still fails: **q02** ("who made the SSO promise"), recall 0.00 across
+every configuration. The judge's reason is that the retrieval context holds only
+July–August emails — the 11 June commitment thread never enters the 20 candidates,
+so the reranker cannot promote it. That is a dense retrieval miss, not a ranking
+one.
 
-1. **Hybrid search (BM25 + dense)** — dense embeddings blur exact strings; sparse
-   retrieval matches them literally.
-2. **Reranking (cross-encoder)** — a bi-encoder never sees query and document
-   together; a cross-encoder does.
+It is also the shape hybrid search exists for: a person's name and a specific date,
+which BM25 matches literally and cosine smears.
+
+1. **Hybrid search (BM25 + dense)** — the only remaining retriever work.
+2. **Generator evaluation** — never measured. Faithfulness, answer relevancy, and
+   the abstention check on the five `missing_data` questions.
