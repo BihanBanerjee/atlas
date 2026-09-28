@@ -12,11 +12,12 @@ to `rerank_candidates` and stops being asked to rank -- it only has to get the
 answer into the shortlist, which it already does well. The cross-encoder then
 reads each candidate against the question and decides the order.
 
-Still missing, and both are later versions:
-
-  v0.3 (hybrid)    -- dense embeddings blur exact strings. "Fernpath" and
-                      "Northwind" are distinctive tokens that BM25 matches
-                      exactly and cosine similarity smears together.
+One thing the reranker does not touch: distinctive names still get blurred by
+the embedding. "Fernpath" and "Northwind" are rare tokens that carry little
+meaning for a model to embed, and the cross-encoder only ever sees the twenty
+candidates the dense search already chose. If the right document never makes
+that shortlist because its name did not match, no amount of reordering helps.
+Worth checking against the eval before assuming it is a problem.
 """
 
 
