@@ -27,9 +27,16 @@ results.
 | 5b | 750 | 100 | **8** | body | — | 1 | 0.942 | −0.011 | 0.716 | −0.039 | $0.115 | 27s |
 | 6a | 750 | 100 | 5 | body | MiniLM-L-6 | 3 | 0.913 | −0.040 | 0.767 | +0.012 | $0.084 | 20s |
 | 6b | **750** | **100** | **5** | **body** | **bge-base** | **3** | **0.954** | **+0.001** | **0.903** | **+0.148** | $0.084 | 23s |
+| 7 | 750 | 100 | 5 | body | bge-base | 2 | 0.962 | — | 0.852 | — | $0.142 | 59s |
 
-Deltas in rows 2–4 are against row 1; rows 5–6 against row 2. **Row 6b is the
-kept configuration.** Rerankers see 20 candidates and return 5.
+Deltas in rows 2–4 are against row 1; rows 5–6 against row 2. Rerankers see 20
+candidates and return 5.
+
+**Rows 1–6b are the original 23-question set. Row 7 is the same configuration as
+6b on an expanded 40-question set**, so its numbers are not comparable with the
+rows above — the q01–q23 subset of row 7 scores **0.957 / 0.905**, reproducing 6b
+and confirming nothing regressed. Row 7 is the baseline for everything that
+follows.
 
 ---
 
@@ -84,8 +91,11 @@ about.
 chunk_tokens 750 · chunk_overlap 100 · top_k 5 · embedded_text body_only
 text-embedding-3-small (1536, cosine) · qdrant, 263 chunks from 256 documents
 rerank BAAI/bge-reranker-base, 20 candidates -> 5
+AsyncConfig(max_concurrent=5, throttle_value=1) -- required above ~25 questions,
+  or the judge load exceeds a 200k TPM ceiling
 
-recall 0.954   precision 0.903
+45-question set: recall 0.962   precision 0.852
+q01-q23 subset:  recall 0.957   precision 0.905
 ```
 
 `chunk_overlap` was never isolated — only 7 documents split at 750, so its

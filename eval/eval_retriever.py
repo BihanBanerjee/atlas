@@ -57,6 +57,7 @@ from datetime import datetime
 from pathlib import Path
 
 from deepeval import evaluate
+from deepeval.evaluate import AsyncConfig
 from deepeval.metrics import (
     ContextualPrecisionMetric, 
     ContextualRecallMetric
@@ -196,7 +197,32 @@ def main() -> None:
         "questions_scored": len(questions),
     }
 
-    evaluate(test_cases=cases, metrics=metrics, hyperparameters=hyperparameters)
+
+
+    # The unthrottled call, kept for the record. It worked at 23 questions and
+    # stopped working at 40 -- not because anything broke, but because the judge
+    # load grew with the golden set.
+
+    # evaluate(test_cases=cases, metrics=metrics, hyperparameters=hyperparameters)
+
+
+
+    # Contextual Precision judges every retrieved chunk, so judge tokens scale
+    # with both top_k and the number of questions. Measured: ~208k tokens in the
+    # minute window at 23 questions, ~362k at 40, against a 200k TPM ceiling.
+    # deepeval dispatches 20 test cases at once by default, which puts all of
+    # that inside one minute and returns 429.
+    #
+    # Throttling spreads the same work across more minutes. It changes wall-clock
+    # time only -- the questions, chunks and judge are identical, so scores stay
+    # comparable with every earlier run.
+
+    evaluate(
+        test_cases=cases,
+        metrics=metrics,
+        hyperparameters=hyperparameters,
+        async_config=AsyncConfig(max_concurrent=5, throttle_value=1),
+    )
 
     out = archive_run(label, records, hyperparameters)
     print(f"\narchived to {out}")
