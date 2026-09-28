@@ -113,7 +113,12 @@ def build_test_cases(questions: list[dict], k:int) -> tuple[list[LLMTestCase], l
                 "id": question["id"],
                 "category": question["category"],
                 "retrieved": [
-                    {"doc_id": hit.doc_id, "chunk_index": hit.chunk_index, "score": hit.score} 
+                    {
+                        "doc_id": hit.doc_id, 
+                        "chunk_index": hit.chunk_index, 
+                        "score": hit.score,
+                        "rerank_score": hit.rerank_score
+                    }
                     for hit in hits
                 ],
             }
@@ -182,6 +187,9 @@ def main() -> None:
         "embedding_model": settings.embedding_model,
         "embedding_dim": settings.embedding_dim,
         "distance": "cosine",
+        "rerank_enabled": settings.rerank_enabled,
+        "reranker_model": settings.reranker_model if settings.rerank_enabled else None,
+        "rerank_candidates": settings.rerank_candidates if settings.rerank_enabled else None,
         "judge_model": JUDGE,
         "threshold": THRESHOLD,
         "collection": settings.qdrant_collection,

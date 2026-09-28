@@ -1,25 +1,22 @@
 """
-Query -> vector -> nearest neighbours.
+Query -> vector -> nearest neighbours, optionally reordered by a cross-encoder.
 
-One embedding of the question, one cosine search, take the top 5. Nothing
-filters or re-scores what comes back -- whatever is nearest in vector space goes
-straight into the prompt.
+v0.1 was dense-only: one embedding, one cosine search, top 5. Measuring it showed
+recall of 0.95 against precision of 0.75 -- the right chunks were coming back and
+landing at ranks 3 to 5, below chunks that were merely on-topic. That is a ranking
+problem, and no retrieval parameter fixed it: sweeping chunk size, overlap and
+top_k moved nothing outside the judge's noise floor.
 
-Two things I'm suspicious of but haven't measured yet:
+So when `rerank_enabled` is on this becomes two stages. The vector search widens
+to `rerank_candidates` and stops being asked to rank -- it only has to get the
+answer into the shortlist, which it already does well. The cross-encoder then
+reads each candidate against the question and decides the order.
 
-  Distinctive names get blurred. "Fernpath" tokenises into ['F','ern','path'],
-  "Northwind" into ['North','wind']. Embeddings capture meaning, and a made-up
-  company name doesn't have much meaning to capture -- so a query naming one
-  might not rank the document that actually contains it any higher than a
-  document about something vaguely similar.
+Still missing, and both are later versions:
 
-  Nearest is not the same as most relevant. Cosine similarity scores the query
-  and the document separately and then compares two compressed summaries. It
-  never looks at the pair together, so "close in vector space" and "actually
-  answers the question" can come apart.
-
-Both are guesses right now. Leaving them written down so I can check whether the
-eval shows either of them actually happening.
+  v0.3 (hybrid)    -- dense embeddings blur exact strings. "Fernpath" and
+                      "Northwind" are distinctive tokens that BM25 matches
+                      exactly and cosine similarity smears together.
 """
 
 
@@ -33,5 +30,18 @@ from atlas.store import Hit, search as vector_search
 
 def retrieve(question: str, k: int | None = None) -> list[Hit]:
     """Return the top-k chunks for a question, most similar first."""
+    top_k = k or settings.top_k
     query_vector = embed_query(question)
-    return vector_search(query_vector, limit=k or settings.top_k)
+
+    if not settings.rerank_enabled:
+        return vector_search(query_vector, limit=top_k)
+
+    # Imported lazily so that turning reranking off keeps torch out of the
+    # process entirely.
+    from atlas.rerank import rerank
+
+    # Never fetch fewer candidates than the caller asked to keep, or the
+    # reranker would be handed less than it has to return.
+    candidates = vector_search(query_vector, limit=max(settings.rerank_candidates, top_k))
+    return rerank(question, candidates, top_k)
+        

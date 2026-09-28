@@ -47,6 +47,10 @@ class Hit:
     title: str
     date: str
     chunk_index: int
+    # Filled in by the reranker when it runs; None means dense scores only. Kept
+    # beside `score` rather than replacing it so a results trace shows both the
+    # original cosine rank and the reranked one.
+    rerank_score: float | None = None
 
 
     @classmethod

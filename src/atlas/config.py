@@ -67,6 +67,21 @@ class Settings(BaseSettings):
     tokenizer_encoding: str = "cl100k_base"  # matches text-embedding-3-small
     top_k: int = 5
 
+    # --- reranking ---
+    # Off by default: turning it on changes what reaches the prompt, so it should
+    # be a deliberate switch rather than something that arrives with an upgrade.
+    rerank_enabled: bool = False
+    # A cross-encoder reads (question, chunk) together instead of comparing two
+    # separately-built vectors, so it can see that a chunk about renewal pricing
+    # happens to contain a user count. It cannot be precomputed -- it runs once
+    # per pair at query time -- which is why it reranks a shortlist rather than
+    # the whole collection.
+    reranker_model: str = "cross-encoder/ms-marco-MiniLM-L-6-v2"
+    # How many candidates the vector search hands to the reranker. The dense
+    # retriever's job becomes "get the answer into this many" rather than "rank it
+    # first", which is the easier job it is already good at.
+    rerank_candidates: int = 20
+
     # --- paths ---
     # Properties, not fields: these are derived from the repo layout, so there is
     # no reason to expose them to the environment.
