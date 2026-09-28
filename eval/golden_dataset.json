@@ -8,12 +8,15 @@
       "reranking_near_duplicate",
       "hybrid_retrieval",
       "pii_redaction",
-      "missing_data"
+      "missing_data",
+      "semantic_boundary",
+      "conceptual_control"
     ],
     "note": "expect_refusal=true items are Deliberate Gaps (docs/FACTS.md Deliberate Gaps section) — a correct system must decline to answer, not invent a figure.",
     "scope": "This file covers Normal Requests + Missing Data only — the two categories meaningful at v0.1 (baseline). Edge Cases (empty/multilingual/cross-source/long queries) land at v0.3 once hybrid retrieval exists to stress; Adversarial Prompts (15+ injection techniques) land at v0.5 once the guardrail layer exists to test. See docs/specs/EVOLUTION.md.",
     "fixtures": "Every question is answerable from eval/fixtures/{emails,notion_pages,drive_docs}.json — a 48-document curated subset (23 Gmail + 11 Notion + 14 Drive) built by scripts/build_fixtures.py from data/corpus. This is CI's index, not the full 256-document corpus. Roughly half the documents are never a correct source for any question; they are near-neighbour distractors drawn from the dense neighbourhoods in docs/PERSONA.md (financials, compensation, renewals, SSO/identity, roadmap). They are what make Context Precision and reranking measurable. There is deliberately no per-document relevance tag: relevance is a property of the (question, document) pair, defined only by the per-question source fields below.",
-    "source_semantics": "acceptable_sources: documents that supply a necessary part of the expected answer — for multi_hop questions the set is needed jointly; otherwise each listed document is individually sufficient. partial_sources: documents that corroborate a fragment of the answer but cannot support it alone — retrieving one is not a recall success and must not be scored as a precision failure. expect_refusal questions list no sources: the answer exists nowhere in the fixtures."
+    "source_semantics": "acceptable_sources: documents that supply a necessary part of the expected answer — for multi_hop questions the set is needed jointly; otherwise each listed document is individually sufficient. partial_sources: documents that corroborate a fragment of the answer but cannot support it alone — retrieving one is not a recall success and must not be scored as a precision failure. expect_refusal questions list no sources: the answer exists nowhere in the fixtures.",
+    "expansion_note": "q01-q28 are the original set, measured in RESULTS.md rows 1-6b. q29-q45 were added 2026-09-28 to make hybrid search and semantic chunking measurable: hybrid_retrieval questions hinge on rare distinctive entities, semantic_boundary questions have their answer in a chunk-tail orphaned by fixed-window chunking, and conceptual_control questions have neither property and should not move under either technique. Report the q01-q23 subset alongside the full set to stay comparable with earlier runs."
   },
   "questions": [
     {
@@ -357,6 +360,189 @@
       "acceptable_sources": [],
       "expect_refusal": true,
       "source": "FACTS.md — Deliberate Gaps"
+    },
+    {
+      "id": "q29",
+      "category": "hybrid_retrieval",
+      "question": "Who is Fernpath Capital's partner on the Tensile deal?",
+      "expected_answer": "Priya Kothari, who signs the term sheet correspondence from priya@fernpath.vc.",
+      "acceptable_sources": [
+        "gmail-fernpath-term-sheet",
+        "gmail-fernpath-diligence-dataroom",
+        "gmail-fernpath-diligence-references"
+      ],
+      "source": "FACTS.md — The Raise, Fernpath Capital table"
+    },
+    {
+      "id": "q30",
+      "category": "hybrid_retrieval",
+      "question": "Who led Tensile's seed round, and on what terms?",
+      "expected_answer": "Halden Partners led a $4,000,000 seed that closed in August 2025 at $18,000,000 post-money, taking a board seat held by Nadia Osei.",
+      "acceptable_sources": [
+        "drive-cap-table-summary"
+      ],
+      "source": "FACTS.md — Company, seed round"
+    },
+    {
+      "id": "q31",
+      "category": "hybrid_retrieval",
+      "question": "Which competitors does Tensile name, and where does it win against each?",
+      "expected_answer": "Surge Labs and Percival. The win rate against Surge Labs improved after the onboarding rebuild, and conversions from Percival are accounts that outgrew their own tolerance for self-hosting.",
+      "acceptable_sources": [
+        "notion-competitive-analysis"
+      ],
+      "source": "FACTS.md — Company, competitors"
+    },
+    {
+      "id": "q32",
+      "category": "hybrid_retrieval",
+      "question": "What has Tensile committed to Calder Systems, and when is it due?",
+      "expected_answer": "An SLA upgrade to 99.9% with credits, agreed 22 April 2026 and due 1 October 2026, to be delivered as a contract amendment.",
+      "acceptable_sources": [
+        "notion-customer-commitments-log"
+      ],
+      "source": "FACTS.md — Customers"
+    },
+    {
+      "id": "q33",
+      "category": "hybrid_retrieval",
+      "question": "What did Meridian Grid ask for when they renewed?",
+      "expected_answer": "Scheduled test windows, so that heavy runs fire only overnight. Sam Okafor raised it as a wishlist item with no urgency, and renewed at $28,000 on unchanged terms.",
+      "acceptable_sources": [
+        "gmail-meridian-renewal"
+      ],
+      "source": "FACTS.md — Customers, Meridian Grid"
+    },
+    {
+      "id": "q34",
+      "category": "hybrid_retrieval",
+      "question": "Who holds Halden Partners' board seat at Tensile?",
+      "expected_answer": "Nadia Osei, who took the seat with the seed round and attends the quarterly board meetings.",
+      "acceptable_sources": [
+        "drive-cap-table-summary",
+        "drive-board-deck-q2-2026"
+      ],
+      "source": "FACTS.md — Board"
+    },
+    {
+      "id": "q35",
+      "category": "hybrid_retrieval",
+      "question": "Who owns the SAML SSO spec in Notion?",
+      "expected_answer": "Dana Whitfield, Tensile's CTO and co-founder.",
+      "acceptable_sources": [
+        "notion-spec-saml-sso"
+      ],
+      "source": "FACTS.md — Board, Dana Whitfield CTO"
+    },
+    {
+      "id": "q36",
+      "category": "hybrid_retrieval",
+      "question": "When did Tensile first meet Aster Ventures?",
+      "expected_answer": "4 June 2026 — the first meeting with Aster Ventures, whose partner on the deal is James Okonkwo.",
+      "acceptable_sources": [
+        "gmail-aster-competing-interest",
+        "drive-month-end-close-may"
+      ],
+      "source": "FACTS.md — The Raise, Aster Ventures first meeting"
+    },
+    {
+      "id": "q37",
+      "category": "semantic_boundary",
+      "question": "According to the Q2 board deck, why is federated identity not scheduled for Q3?",
+      "expected_answer": "The quarter is consumed by tracing GA and the billing revamp. Audit log export is scoped for Q3 and SOC 2 observation begins October, but federated identity is explicitly not scheduled.",
+      "acceptable_sources": [
+        "drive-board-deck-q2-2026"
+      ],
+      "source": "FACTS.md — The Northwind Thread, roadmap position",
+      "note": "The answer sits after the 750-token cut, in the tail chunk."
+    },
+    {
+      "id": "q38",
+      "category": "semantic_boundary",
+      "question": "How does pitch deck v4 break down the use of funds?",
+      "expected_answer": "Engineering 37%, go-to-market 22%, enterprise readiness 10%, infrastructure and G&A 20%, and an 11% buffer.",
+      "acceptable_sources": [
+        "drive-pitch-deck-v4"
+      ],
+      "source": "FACTS.md — Pitch Decks",
+      "note": "Whole section falls in the orphaned tail chunk."
+    },
+    {
+      "id": "q39",
+      "category": "semantic_boundary",
+      "question": "What does the financial model say happens if the round closes at $8M instead of $12M?",
+      "expected_answer": "The hiring plan reduces from six to three, enterprise work sequences rather than parallelises, and runway is 16 months rather than 24.",
+      "acceptable_sources": [
+        "drive-financial-model-2026"
+      ],
+      "source": "FACTS.md — Financials by Month",
+      "note": "Downside scenario sits after the 750-token cut."
+    },
+    {
+      "id": "q40",
+      "category": "semantic_boundary",
+      "question": "Who signed the Northwind MSA for each party, and when was it executed?",
+      "expected_answer": "Executed 30 September 2025. Ravi Menon, Chief Executive Officer, signed for Tensile; Linda Marsh signed for Northwind Logistics.",
+      "acceptable_sources": [
+        "drive-northwind-msa"
+      ],
+      "source": "FACTS.md — Customers, Northwind MSA",
+      "note": "Signature block falls in the tail chunk, which opens mid-sentence."
+    },
+    {
+      "id": "q41",
+      "category": "semantic_boundary",
+      "question": "What does Fernpath want to do in the first two weeks of diligence?",
+      "expected_answer": "Reference calls — with customers, and with two of Tensile's investors.",
+      "acceptable_sources": [
+        "gmail-fernpath-term-sheet"
+      ],
+      "source": "FACTS.md — The Raise, Fernpath diligence",
+      "note": "Falls after the 750-token cut."
+    },
+    {
+      "id": "q42",
+      "category": "semantic_boundary",
+      "question": "What audit log retention did Tensile commit to Northwind, and for when?",
+      "expected_answer": "Twelve month retention, in the Q3 build, targeting end of August.",
+      "acceptable_sources": [
+        "gmail-northwind-sso-commitment"
+      ],
+      "source": "FACTS.md — The Northwind Thread",
+      "note": "Tail chunk opens mid-header with ':**' — the same orphaned chunk that makes q02 fail."
+    },
+    {
+      "id": "q43",
+      "category": "conceptual_control",
+      "question": "Why is the company raising money right now?",
+      "expected_answer": "Runway is roughly seven months as of August 2026, with cash running out around March 2027 at the current burn rate.",
+      "acceptable_sources": [
+        "drive-financial-model-2026",
+        "drive-board-deck-q2-2026"
+      ],
+      "source": "FACTS.md — Financials by Month, runway"
+    },
+    {
+      "id": "q44",
+      "category": "conceptual_control",
+      "question": "What does the product actually do, and who is it for?",
+      "expected_answer": "Load testing and performance monitoring for engineering teams. The modules are Tensile Load for load testing and Tensile Watch for production monitoring, with distributed tracing shipping in Q3.",
+      "acceptable_sources": [
+        "drive-pitch-deck-v4",
+        "notion-competitive-analysis"
+      ],
+      "source": "FACTS.md — Company, product and modules"
+    },
+    {
+      "id": "q45",
+      "category": "conceptual_control",
+      "question": "Is the business growing, and is the rate steady?",
+      "expected_answer": "Growing but decelerating. June growth was 9.3% month over month, down from roughly 11.5% in the prior trend.",
+      "acceptable_sources": [
+        "gmail-investor-update-2026-06",
+        "drive-financial-model-2026"
+      ],
+      "source": "FACTS.md — Financials by Month, growth deceleration"
     }
   ]
 }
