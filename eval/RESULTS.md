@@ -54,6 +54,11 @@ from full recall to zero (q05, q06, q09, q12) — their answer sat at rank 3–5
 Precision gained 0.082. Bad trade: a precision loss wastes tokens, a recall loss
 loses the answer.
 
+**2 → 5b · top_k 5 → 8.** Both deltas inside the noise floor, cost +37%. Nothing
+left to find above k=5. Also hit OpenAI's 200k TPM limit — measured judge load is
+~115k tokens at k=3, ~208k at k=5, ~333k at k=8 — and needed temporary throttling
+to complete at all.
+
 **2 → 6a · rerank with `ms-marco-MiniLM-L-6-v2`.** Precision +0.012 (inside noise),
 recall −0.040. Fixed q17's buried fact but broke q02 and q10 — net one question
 worse. On q10 it dropped `drive-financial-model-2026` (which holds the answer) for
@@ -70,11 +75,6 @@ The reranker's own scores are deterministic, so all three runs retrieved identic
 chunks and only the judge varied. Its precision spread was 0.013 against dense's
 0.059 — when the right chunk is clearly first, the judge has less to be uncertain
 about.
-
-**2 → 5b · top_k 5 → 8.** Both deltas inside the noise floor, cost +37%. Nothing
-left to find above k=5. Also hit OpenAI's 200k TPM limit — measured judge load is
-~115k tokens at k=3, ~208k at k=5, ~333k at k=8 — and needed temporary throttling
-to complete at all.
 
 ---
 
@@ -97,7 +97,10 @@ expected effect is near zero. Untested.
 
 - **Tuned on all 23 test questions.** No held-out set (23 is too few to split), so
   these figures are optimistic.
-- **n=1 on rows 1, 3, 5a, 5b.** Only rows 2 and 4 have repeats.
+- **n=1 on rows 1, 3, 5a, 5b.** Rows 2, 4, 6a and 6b have n=3.
+- The ±0.06 precision floor was measured on the dense configuration. With the
+  reranker the spread is 0.013 — better retrieval gives the judge less to be
+  uncertain about, so future deltas can be read more tightly.
 - Chunk size and `top_k` are corpus-dependent; a different corpus needs the sweep
   re-run, not these values copied.
 
