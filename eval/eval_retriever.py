@@ -188,6 +188,8 @@ def main() -> None:
         "embedding_model": settings.embedding_model,
         "embedding_dim": settings.embedding_dim,
         "distance": "cosine",
+        "hybrid_enabled": settings.hybrid_enabled,
+        "hybrid_prefetch": settings.hybrid_prefetch if settings.hybrid_enabled else None,
         "rerank_enabled": settings.rerank_enabled,
         "reranker_model": settings.reranker_model if settings.rerank_enabled else None,
         "rerank_candidates": settings.rerank_candidates if settings.rerank_enabled else None,

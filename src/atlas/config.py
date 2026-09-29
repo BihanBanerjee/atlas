@@ -67,6 +67,16 @@ class Settings(BaseSettings):
     tokenizer_encoding: str = "cl100k_base"  # matches text-embedding-3-small
     top_k: int = 5
 
+    # --- hybrid retrieval ---
+    # Off by default. Turning it on changes the collection schema, so the index
+    # has to be rebuilt -- the dense vector stops being anonymous and a sparse
+    # vector sits beside it.
+    hybrid_enabled: bool = True
+    # Candidates each arm contributes before fusion. Dense and BM25 rank the same
+    # corpus differently; RRF only sees the ranks, so this decides how deep each
+    # opinion goes.
+    hybrid_prefetch: int = 20
+
     # --- reranking ---
     # Off by default: turning it on changes what reaches the prompt, so it should
     # be a deliberate switch rather than something that arrives with an upgrade.

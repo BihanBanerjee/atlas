@@ -29,9 +29,28 @@ from dataclasses import dataclass
 from typing import Any
 
 from qdrant_client import QdrantClient
-from qdrant_client.models import Distance, PointStruct, VectorParams
+from qdrant_client.models import (
+    Distance, 
+    Document,
+    Fusion,
+    FusionQuery,
+    Modifier,
+    PointStruct,
+    Prefetch,
+    SparseVectorParams,
+    VectorParams
+)
 
 from atlas.config import settings
+
+# Vector names. Anonymous vectors are fine with one per point; two need names,
+# and the names are part of the collection schema -- changing them means a rebuild.
+DENSE = "dense"
+SPARSE = "bm25"
+
+# Computed by the Qdrant server, not locally. Sending a Document instead of a
+# vector is what keeps BM25 free of any Python dependency.
+BM25_MODEL = "Qdrant/bm25"
 
 _client = QdrantClient(url=settings.qdrant_url)
 
@@ -85,13 +104,31 @@ def ensure_collection(recreate: bool = False) -> None:
         exists = False
 
     if not exists:
-        _client.create_collection(
-            collection_name=settings.qdrant_collection,
-            vectors_config=VectorParams(
-                size=settings.embedding_dim,
-                distance=Distance.COSINE
-            ),
-        )
+
+        if settings.hybrid_enabled:
+            # Named vectors, because a point now carries two of them. The sparse
+            # side is BM25 with the IDF modifier, which is what makes a rare term
+            # like "Kothari" outweigh a common one like "board" -- Qdrant keeps
+            # the corpus statistics and computes it server-side.
+            _client.create_collection(
+                collection_name=settings.qdrant_collection,
+                vectors_config={
+                    DENSE: VectorParams(
+                        size=settings.embedding_dim, distance=Distance.COSINE
+                    )
+                },
+                sparse_vectors_config={
+                    SPARSE: SparseVectorParams(modifier=Modifier.IDF)
+                },
+            )
+        else:
+            _client.create_collection(
+                collection_name=settings.qdrant_collection,
+                vectors_config=VectorParams(
+                    size=settings.embedding_dim,
+                    distance=Distance.COSINE
+                ),
+            )
 
 
 def upsert_chunks(
@@ -104,25 +141,71 @@ def upsert_chunks(
             f"vector/payload length mismatch: {len(vectors)} vs {len(payloads)}"
         )
 
-    points = [
-        PointStruct(id=index, vector=vector, payload=payload) 
-        for index, (vector, payload) in enumerate(zip(vectors, payloads))
-    ]
+    if settings.hybrid_enabled:
+        # The sparse vector is not computed here. A Document is a promise that
+        # the server will tokenise this text and build the BM25 vector itself,
+        # which is why hybrid needs no extra Python dependency.
+        points = [
+            PointStruct(
+                id=index,
+                vector={
+                    DENSE: vector,
+                    SPARSE: Document(text=payload["text"], model=BM25_MODEL)
+                },
+                payload=payload
+            ) for index, (vector, payload) in enumerate(zip(vectors, payloads))
+        ]
+    else:        
+        points = [
+            PointStruct(id=index, vector=vector, payload=payload) 
+            for index, (vector, payload) in enumerate(zip(vectors, payloads))
+        ]
 
     _client.upsert(collection_name=settings.qdrant_collection, points=points)
 
     return len(points)
 
 
-def search(query_vector: list[float], limit: int | None = None) -> list[Hit]:
-    """Nearest neighbours by cosine similarity. Straight top-k, nothing filtered or re-scored afterwards."""
+def search(
+        query_vector: list[float], 
+        limit: int | None = None,
+        query_text: str | None = None,
+        ) -> list[Hit]:
+    """
+    Nearest neighbours: dense only, or dense fused with BM25 when hybrid is on.
+
+    Hybrid needs `query_text` as well as the vector, because BM25 matches strings
+    rather than geometry. The two arms search the same corpus independently and
+    Reciprocal Rank Fusion combines them -- RRF reads only the positions, never
+    the scores, which is what lets a cosine similarity of 0.51 and a BM25 score of
+    4.6 be compared at all.
+    """
+
+    top_k = limit or settings.top_k
+
+    if not settings.hybrid_enabled or query_text is None:
+        response = _client.query_points(
+            collection_name=settings.qdrant_collection,
+            query=query_vector,
+            limit=top_k,
+            with_payload=True
+        )
+        return [Hit.from_point(point) for point in response.points]
+
     response = _client.query_points(
         collection_name=settings.qdrant_collection,
-        query=query_vector,
-        limit=limit or settings.top_k,
+        prefetch=[
+            Prefetch(query=query_vector, using=DENSE, limit=settings.hybrid_prefetch),
+            Prefetch(
+                query=Document(text=query_text, model=BM25_MODEL),
+                using=SPARSE,
+                limit=settings.hybrid_prefetch
+            ),
+        ],
+        query=FusionQuery(fusion=Fusion.RRF),
+        limit=top_k,
         with_payload=True
     )
-
     return [Hit.from_point(point) for point in response.points]
 
 def count_points() -> int:

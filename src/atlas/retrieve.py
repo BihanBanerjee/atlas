@@ -35,7 +35,7 @@ def retrieve(question: str, k: int | None = None) -> list[Hit]:
     query_vector = embed_query(question)
 
     if not settings.rerank_enabled:
-        return vector_search(query_vector, limit=top_k)
+        return vector_search(query_vector, limit=top_k, query_text=question)
 
     # Imported lazily so that turning reranking off keeps torch out of the
     # process entirely.
@@ -43,6 +43,10 @@ def retrieve(question: str, k: int | None = None) -> list[Hit]:
 
     # Never fetch fewer candidates than the caller asked to keep, or the
     # reranker would be handed less than it has to return.
-    candidates = vector_search(query_vector, limit=max(settings.rerank_candidates, top_k))
+    candidates = vector_search(
+        query_vector, 
+        limit=max(settings.rerank_candidates, top_k), 
+        query_text=question,
+    )
     return rerank(question, candidates, top_k)
         
