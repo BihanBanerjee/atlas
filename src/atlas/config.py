@@ -67,6 +67,26 @@ class Settings(BaseSettings):
     tokenizer_encoding: str = "cl100k_base"  # matches text-embedding-3-small
     top_k: int = 5
 
+    # --- chunking strategy ---
+    # "fixed"    -- token windows, ignores meaning, the v0.1 baseline
+    # "semantic" -- cut where the topic moves, measured by embedding distance
+    #               between adjacent sentences
+    #
+    # Switching this re-chunks the corpus, so the index must be rebuilt and the
+    # result is only comparable against runs made with the same value.
+    chunk_strategy: str = "fixed"
+    # Cut at the top (100 - N)% of adjacent-sentence distances *within a single
+    # document*. Per-document rather than corpus-wide because a tightly-focused
+    # spec and a rambling email thread have different distance distributions;
+    # one global threshold would over-split one and never split the other.
+    semantic_percentile: int = 95
+    # Floor and ceiling on the result. Both are guards, not tuning knobs.
+    # Without the floor a strong seam emits a one-sentence chunk that retrieves
+    # well and answers nothing. Without the ceiling a document with uniformly
+    # low distances never splits at all.
+    semantic_min_tokens: int = 60
+    semantic_max_tokens: int = 750
+
     # --- hybrid retrieval ---
     # Off by default. Turning it on changes the collection schema, so the index
     # has to be rebuilt -- the dense vector stops being anonymous and a sparse
@@ -114,4 +134,9 @@ class Settings(BaseSettings):
         return REPO_ROOT / "eval" / "results"
 
 
-settings = Settings()
+# type: ignore[call-arg] -- pydantic-settings reads the required credentials from
+# the environment, which a static checker cannot see, so it reads this as a call
+# missing two arguments. Giving those fields defaults would silence it and throw
+# away the reason they have none: failing loudly at import when a key is absent,
+# instead of with a 401 twenty seconds into an ingest run.
+settings = Settings()  # type: ignore[call-arg]

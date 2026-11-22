@@ -9,6 +9,7 @@ authors = [
 requires-python = ">=3.12,<3.13"
 dependencies = [
     "anthropic>=0.124.0",
+    "numpy>=2.0",
     "openai>=3.3.1",
     "pydantic>=2.13.4",
     "pydantic-settings>=2.15.0",

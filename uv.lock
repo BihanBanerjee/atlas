@@ -130,6 +130,7 @@ version = "0.1.0"
 source = { editable = "." }
 dependencies = [
     { name = "anthropic" },
+    { name = "numpy" },
     { name = "openai" },
     { name = "pydantic" },
     { name = "pydantic-settings" },
@@ -151,6 +152,7 @@ eval = [
 [package.metadata]
 requires-dist = [
     { name = "anthropic", specifier = ">=0.124.0" },
+    { name = "numpy", specifier = ">=2.0" },
     { name = "openai", specifier = ">=3.3.1" },
     { name = "pydantic", specifier = ">=2.13.4" },
     { name = "pydantic-settings", specifier = ">=2.15.0" },

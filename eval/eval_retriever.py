@@ -30,7 +30,7 @@ WHAT IS NOT MEASURED HERE
 The five `missing_data` questions are excluded. Their ideal answer is "this is not
 in the corpus", and asking a judge to attribute that to retrieved chunks produces
 noise rather than a score. Refusal behaviour belongs to the generator evaluation,
-as a binary did-it-decline check. 23 of 28 questions are scored.
+as a binary did-it-decline check. 40 of 45 questions are scored.
 
 `actual_output` is deliberately not set on the test cases. Neither metric lists it
 in `_required_params` (verified against deepeval 4.2.6), and omitting it keeps the
@@ -82,7 +82,7 @@ LATEST_RUN = Path(".deepeval/.latest_test_run.json")
 
 
 def load_questions() -> list[dict]:
-    """The 23 scoreable questions: everything except the deliberate refusals."""
+    """The 40 scorable questions: everything except the deliberate refusals."""
     data = json.loads(settings.golden_dataset.read_text())
     return [q for q in data["questions"] if not q.get("expect_refusal")]
 
@@ -150,6 +150,13 @@ def archive_run(label: str, records: list[dict], hyperparameters: dict) -> Path 
     out.write_text(json.dumps(payload, indent=2))
     return out
 
+
+def _if(strategy: str, value):
+    """The value when `strategy` is the active one, otherwise None."""
+    return value if settings.chunk_strategy == strategy else None
+
+
+
 def main() -> None:
     # No arguments, deliberately. Every tunable is read from settings, which is
     # what the application itself reads -- a --top-k flag would let this script
@@ -181,9 +188,19 @@ def main() -> None:
     
     hyperparameters = {
         "top_k": top_k,
-        "chunk_tokens": settings.chunk_tokens,
-        "chunk_overlap": settings.chunk_overlap,
-        "chunk_strategy": "fixed_token_window",
+        # Read from settings, never typed. A hardcoded "fixed_token_window" here
+        # would label every semantic run as a fixed one, and the archive would be
+        # a confident record of the wrong experiment.
+        "chunk_strategy": settings.chunk_strategy,
+        # Each strategy records its own knobs and Nones the other's. Recording
+        # chunk_tokens on a semantic run is worse than omitting it -- the value is
+        # real, it is just not what produced the chunks, and a reader a month
+        # later has no way to tell that from the file.
+        "chunk_tokens": _if("fixed", settings.chunk_tokens),
+        "chunk_overlap": _if("fixed", settings.chunk_overlap),
+        "semantic_percentile": _if("semantic", settings.semantic_percentile),
+        "semantic_min_tokens": _if("semantic", settings.semantic_min_tokens),
+        "semantic_max_tokens": _if("semantic", settings.semantic_max_tokens),
         "embedded_text": EMBED_FORMAT,
         "embedding_model": settings.embedding_model,
         "embedding_dim": settings.embedding_dim,

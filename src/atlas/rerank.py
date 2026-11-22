@@ -66,6 +66,10 @@ def rerank(question: str, hits: list[Hit], top_k: int) -> list[Hit]:
     model = _get_model()
     scores = model.predict([(question, hit.text) for hit in hits])
 
-    scored = [replace(hit, rerank_score=float(score)) for hit, score in zip(hits, scores)]
-    scored.sort(key = lambda hit: hit.rerank_score, reverse=True)
-    return scored[:top_k]
+    # Sort the (hit, score) pairs rather than the rebuilt Hits. Sorting on
+    # hit.rerank_score means sorting on a float | None -- never None here, since
+    # the line above has just set it, but nothing in the type says so, and hits
+    # that arrive already reranked would raise a TypeError comparing None. The
+    # score is already in hand, so sort on that instead.
+    ranked = sorted(zip(hits, scores), key=lambda pair: float(pair[1]), reverse=True)
+    return [replace(hit, rerank_score=float(score)) for hit, score in ranked[:top_k]]

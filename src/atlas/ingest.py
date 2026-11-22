@@ -35,7 +35,7 @@ from typing import Any
 
 import yaml
 
-from atlas.chunking import chunk_text
+from atlas.chunking import chunk_text, count_tokens, semantic_chunk_text
 from atlas.config import settings
 from atlas.embeddings import embed_texts
 from atlas.store import count_points, ensure_collection, upsert_chunks
@@ -110,9 +110,13 @@ def build_chunks(docs: list[dict[str, Any]]) -> tuple[list[str], list[dict[str, 
     texts: list[str] = []
     payloads: list[dict[str, Any]] = []
 
+    # Chosen once, outside the loop: whichever splitter this is, it has to be the
+    # same one for every document or the index mixes two chunkings.
+    split = semantic_chunk_text if settings.chunk_strategy == "semantic" else chunk_text
+
     for doc in docs:
         title, date = _doc_meta(doc)
-        for index, chunk in enumerate(chunk_text(doc.get("body", ""))):
+        for index, chunk in enumerate(split(doc.get("body", ""))):
             texts.append(chunk)
             payloads.append(
                 {
@@ -137,9 +141,16 @@ def main() -> None:
 
     tiers: dict[str, int] = {}
     for payload in payloads:
-        tiers[payload["tier"]] = tiers.get(payload["tier"], 0) + 1 
-
-    print(f"produced {len(texts)} chunks at {settings.chunk_tokens} tokens each")
+        tiers[payload["tier"]] = tiers.get(payload["tier"], 0) + 1
+    if settings.chunk_strategy == "semantic":
+        sizes = sorted(count_tokens(text) for text in texts)
+        print(
+            f"produced {len(texts)} semantic chunks "
+            f"(p{settings.semantic_percentile} cut; tokens: "
+            f"min {sizes[0]}, median {sizes[len(sizes) // 2]}, max {sizes[-1]})"
+        )
+    else:
+        print(f"produced {len(texts)} chunks at {settings.chunk_tokens} tokens each")
     print(f" by tier: {tiers}")
 
 
@@ -147,7 +158,7 @@ def main() -> None:
     vectors = embed_texts(texts)
 
 
-    # recreate=True: re-running with different chunking would otherwise leave 
+    # recreate=True: re-running with different chunking would otherwise leave
     # stale points behind and mix two chunkings in one collection.
     ensure_collection(recreate=True)
     written = upsert_chunks(vectors, payloads)
