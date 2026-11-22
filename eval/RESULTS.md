@@ -10,8 +10,11 @@ the ideal answer, weighted by rank. Judge: `gpt-4.1-mini` (OpenAI, deliberately 
 different family from the Claude generator). Raw runs in `eval/results/*.json`.
 
 **Noise floor:** repeating a configuration unchanged moves aggregate precision by
-up to **±0.06** and recall by **±0.011**. Differences smaller than that are not
-results.
+up to **±0.06** and recall by **±0.011** on the dense 23-question set. *Corrected
+after row 8:* on the 40-question set with a reranker the spread is **±0.03** on
+both metrics, not the ±0.013 I quoted earlier — that figure came from three runs
+on 23 questions and did not survive the larger set. Differences smaller than
+±0.03 are not results.
 
 ---
 
@@ -28,6 +31,7 @@ results.
 | 6a | 750 | 100 | 5 | body | MiniLM-L-6 | 3 | 0.913 | −0.040 | 0.767 | +0.012 | $0.084 | 20s |
 | 6b | **750** | **100** | **5** | **body** | **bge-base** | **3** | **0.954** | **+0.001** | **0.903** | **+0.148** | $0.084 | 23s |
 | 7 | 750 | 100 | 5 | body | bge-base | 2 | 0.962 | — | 0.852 | — | $0.142 | 59s |
+| 8 | 750 | 100 | 5 | body | bge-base + BM25/RRF | 2 | 0.910 | −0.052 | 0.799 | −0.053 | $0.139 | 43s |
 
 Deltas in rows 2–4 are against row 1; rows 5–6 against row 2. Rerankers see 20
 candidates and return 5.
@@ -83,6 +87,71 @@ chunks and only the judge varied. Its precision spread was 0.013 against dense's
 0.059 — when the right chunk is clearly first, the judge has less to be uncertain
 about.
 
+**7 → 8 · hybrid dense + BM25, fused with RRF.** Recall −0.052, precision −0.053,
+both roughly 2× the floor. Per category, against row 7:
+
+```
+hybrid_retrieval      recall 1.000 -> 0.880    precision 0.807 -> 0.727
+multi_hop                    1.000 -> 1.000              0.876 -> 0.750
+semantic_boundary            1.000 -> 1.000              0.969 -> 0.889
+reranking_near_dup           1.000 -> 1.000              0.935 -> 0.857
+signal_lookup                0.923 -> 0.885              0.929 -> 0.899
+conceptual_control           0.833 -> 0.667              0.317 -> 0.350
+pii_redaction                1.000 -> 1.000              0.836 -> 0.885
+```
+
+`hybrid_retrieval` — the nine questions I wrote specifically to need lexical
+matching — regressed on both metrics. The feature lost on its own ground.
+
+Mechanism: the 20 candidates handed to the reranker are now the RRF fusion of each
+arm's top 20. RRF counts rank positions and throws the scores away, so BM25's
+rank-1 weighs exactly as much as dense's even when it is junk, displacing good
+dense candidates out of the shortlist before the cross-encoder ever sees them.
+That is why categories with no lexical component at all fell too.
+
+Why BM25 is junk here, measured on q02. The question is "Who made the SSO promise
+to Northwind, and who else saw it?" I reimplemented BM25 over the 263 chunks to
+see the actual term weights:
+
+```
+term         df     IDF      in the target document?
+saw           2    4.66      no   <- highest IDF, contributes 0
+promise       3    4.32      no   <- contributes 0
+else         11    3.13      no
+sso          13    2.97      yes (x1)
+who          20    2.56      no
+made         22    2.46      no
+northwind    22    2.46      yes (x1)
+it/and/the/to      0.09-0.97 partly
+```
+
+The two most discriminating words in the question carry 8.98 of the available
+weight between them and score **zero** against the document that holds the
+answer — it says `saml` five times where the question says `sso` once, and BM25
+has no way to know those are the same thing. Worse, `northwind` appears as a
+standalone token only once: the other four occurrences are inside
+`linda.marsh@northwindlogistics.com`, which tokenises to `northwindlogistics`, a
+different term entirely.
+
+Result: the target document ranks **28th of 263** (chunk 0, score 5.43) and 44th
+(chunk 1, 4.55), both far outside `hybrid_prefetch = 20`. BM25 never nominated it
+for fusion. What it nominated instead was `gmail-prospect-harrowgate` at rank 6,
+which scores 9.29 because it contains the literal word "promise" — about an
+entirely different prospect.
+
+(Those numbers come from my own tokeniser, `[a-z0-9]+`. Qdrant's `Qdrant/bm25`
+stems and drops stopwords, so the absolute scores differ. The conclusion holds:
+given the surnames BM25 finds the document at rank 2, given the real question it
+does not.)
+
+So BM25 pays when the *question* carries the rare token. Here the rare tokens sit
+in the documents and the questions are conversational. Fixing that is query-side
+work — expansion, HyDE — not a fusion parameter.
+
+**Not reverted yet.** Leaving it on while I test semantic chunking, so row 8 is
+the baseline for `hybrid_enabled = True` runs and row 7 for dense. Not comparable
+across the two.
+
 ---
 
 ## Current configuration
@@ -124,9 +193,16 @@ July–August emails — the 11 June commitment thread never enters the 20 candi
 so the reranker cannot promote it. That is a dense retrieval miss, not a ranking
 one.
 
-It is also the shape hybrid search exists for: a person's name and a specific date,
-which BM25 matches literally and cosine smears.
+Hybrid search was the obvious candidate for it and it did not help — see row 8
+for why (the question carries no rare token; the document does).
 
-1. **Hybrid search (BM25 + dense)** — the only remaining retriever work.
-2. **Generator evaluation** — never measured. Faithfulness, answer relevancy, and
+Two questions now fail on **recency** rather than ranking: q10 and q43 both ask
+about runway, the golden answer says seven months as of August 2026, and the
+retrieved context says eight and nine from July documents. Retrieval finds the
+right neighbourhood and the wrong month. Nothing I have tested so far addresses
+this.
+
+1. **Semantic chunking** — next, with hybrid left on (compare against row 8).
+2. **DBSF weighted fusion** instead of RRF — after that.
+3. **Generator evaluation** — never measured. Faithfulness, answer relevancy, and
    the abstention check on the five `missing_data` questions.
