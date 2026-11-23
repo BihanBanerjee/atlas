@@ -118,7 +118,18 @@ class Settings(BaseSettings):
     # per pair at query time -- which is why it reranks a shortlist rather than
     # the whole collection.
     # reranker_model: str = "cross-encoder/ms-marco-MiniLM-L-6-v2"
-    reranker_model: str = "BAAI/bge-reranker-base"
+    # bge-base was measured and it was actively harmful once hybrid fusion was in
+    # place: on the fused ordering it took rank-1 accuracy from 62% to 40% and
+    # discarded six correct documents out of the top 5 entirely. It had helped at
+    # +0.148 precision when it was fixing a dense-only ordering, which places the
+    # answer first only ~50% of the time -- there was a lot to fix. RRF already
+    # reaches 62%, so a weak cross-encoder overwrites a better ordering with its
+    # own.
+    #
+    # bge-large preserves hit@5 and edges MRR up, and judged precision went
+    # 0.800 -> 0.880 on the 40-question set. Costs 2.24GB against ~400MB and
+    # about 13s more per eval run.
+    reranker_model: str = "BAAI/bge-reranker-large"
     # How many candidates the vector search hands to the reranker. The dense
     # retriever's job becomes "get the answer into this many" rather than "rank it
     # first", which is the easier job it is already good at.
