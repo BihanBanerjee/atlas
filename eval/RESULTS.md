@@ -33,6 +33,7 @@ on 23 questions and did not survive the larger set. Differences smaller than
 | 7 | 750 | 100 | 5 | body | bge-base | 2 | 0.962 | — | 0.852 | — | $0.142 | 59s |
 | 8 | 750 | 100 | 5 | body | bge-base + BM25/RRF | 2 | 0.910 | −0.052 | 0.799 | −0.053 | $0.139 | 43s |
 | 9 | **semantic** | — | 5 | body | bge-base + BM25/RRF | 1 | 0.940 | +0.030 | 0.800 | +0.001 | $0.108 | 53s |
+| **10** | semantic | — | 5 | body | **bge-large** + BM25/RRF | 1 | 0.940 | 0.000 | **0.880** | **+0.080** | $0.111 | 56s |
 
 Deltas in rows 2–4 are against row 1; rows 5–6 against row 2. Rerankers see 20
 candidates and return 5.
@@ -257,24 +258,92 @@ The arm-level numbers below were taken on the 365/366-chunk index. The row-8
 correction above is unaffected: that was measured on the fixed 263-chunk index,
 which is deterministic.
 
+---
+
+### 9 → 10 · a stronger cross-encoder
+
+Precision **0.800 → 0.880**, nearly 3× the noise floor and the clearest single
+improvement in this table. Recall unchanged at 0.940. The only intended change
+was `bge-reranker-base` → `bge-reranker-large`.
+
+This is the end of the thread that started with row 8 reading as a regression.
+Measured per arm on the same index:
+
+```
+                     hit@5   rank1    MRR
+fused (RRF only)      92%     62%    0.733
++ bge-base            80%     40%    0.561     -0.172
++ bge-large           92%     60%    0.742     +0.021
+```
+
+`bge-base` was not merely reordering badly — it discarded seven correct documents
+out of the top 5 entirely (q02, q10, q19, q31, q32, q43, q44), taking a 62%
+rank-1 ordering down to 40%, worse than either arm alone. `bge-large` preserves
+hit@5 completely.
+
+**So every retrieval change since row 6b was working, and one component was
+eating all of it.** Hybrid raised hit@5 from 85% to 92%. Semantic chunking
+raised the dense arm from 85% to 90%. Neither was visible in the aggregate
+because what followed them destroyed the ordering. Replace it and the
+accumulated gains surface at once.
+
+Why it helped at 6b and hurt here: a cross-encoder is correcting the ordering it
+is handed. Dense alone places the answer first about 50% of the time, so at 6b
+there was a great deal to fix and it gained +0.148 precision. RRF already reaches
+62%, so a weak cross-encoder now overwrites a better ordering with its own worse
+one. The technique was never wrong; the model was too weak for the job once
+fusion had done most of it.
+
+**Caveats.**
+
+- **n = 1.** Row 7 had two runs, row 6b had three.
+- **Two things changed between 9 and 10**, not one: the reranker, and boundary
+  detection moving to a local encoder. The arm diagnostic showed the boundary
+  swap was retrieval-neutral (fused 92%/62%/0.733 against 92%/62%/0.736 on the
+  previous index), so the gain is attributable to the reranker — but this is not
+  a clean single-variable comparison.
+- **Against row 7, +0.028 is inside the ±0.03 floor.** Best precision recorded on
+  the 40-question set is true. Beating row 7 is not yet established. Row 9 → 10
+  is.
+- `bge-large` is 2.24GB against ~400MB and added ~13s per eval run.
+
+**Still failing:** q43 recall 0.00 — the runway recency problem, unchanged by any
+of this. q29 and q42 on precision.
+
+### An aside: the same defect, twice
+
+Two `diagnose_arms` runs minutes apart on an unchanged index gave fused
+92%/62%/0.733 and 92%/60%/0.720, while `dense` and `sparse` were bit-identical in
+both. Only the fusion moved.
+
+The dense *prefetch* is 20 deep. OpenAI's query embedding is not stable, which
+does not disturb dense's top 5 but reorders its tail — and RRF reads ranks all
+the way down. Same root cause as the chunk-boundary flip: a discrete decision
+taken over near-ties, fed by a non-deterministic endpoint. Worth remembering that
+~±0.013 of fused MRR is measurement noise, which is the same magnitude as
+`bge-large`'s +0.021.
+
 
 ---
 
 ## Current configuration
 
 ```
-chunk_tokens 750 · chunk_overlap 100 · top_k 5 · embedded_text body_only
-text-embedding-3-small (1536, cosine) · qdrant, 263 chunks from 256 documents
-rerank BAAI/bge-reranker-base, 20 candidates -> 5
+chunk_strategy semantic · p95 cut · floor 60 · ceiling 750 · top_k 5
+boundaries   BAAI/bge-small-en-v1.5, local and deterministic
+index        text-embedding-3-small (1536, cosine)
+             qdrant, 371 chunks from 256 documents, median 117 tokens
+retrieval    hybrid dense + BM25, fused with RRF, 20 candidates per arm
+rerank       BAAI/bge-reranker-large, 20 candidates -> 5
 AsyncConfig(max_concurrent=5, throttle_value=1) -- required above ~25 questions,
   or the judge load exceeds a 200k TPM ceiling
 
-45-question set: recall 0.962   precision 0.852
-q01-q23 subset:  recall 0.957   precision 0.905
+40-question set: recall 0.940   precision 0.880      (row 10, n=1)
 ```
 
-`chunk_overlap` was never isolated — only 7 documents split at 750, so its
-expected effect is near zero. Untested.
+`chunk_overlap` was never isolated — under fixed chunking only 7 documents split
+at 750, so its expected effect was near zero. It no longer applies at all under
+semantic chunking. Untested and now moot.
 
 ---
 
@@ -309,14 +378,13 @@ retrieved context says eight and nine from July documents. Retrieval finds the
 right neighbourhood and the wrong month. Nothing I have tested so far addresses
 this.
 
-1. **Hybrid on, reranker off** — one run. The arm diagnostic says this should be
-   the best configuration measured so far; this checks whether the judged metrics
-   agree with the document-level ones.
-2. **A stronger reranker** — `bge-reranker-large` or `bge-reranker-v2-m3`. Rerank
-   after fusion is sound in principle; `bge-base` is not strong enough to beat RRF
-   on this corpus. Local, free at inference.
-3. **DBSF weighted fusion** — deferred. Tuning fusion weights while a downstream
-   stage is degrading the ordering would be measuring noise.
+1. **Repeat row 10.** n=1 on the headline number. A second run settles whether
+   0.880 holds and whether it genuinely clears row 7's 0.852.
+2. **DBSF weighted fusion** instead of RRF — worth trying now that the stage
+   after it is no longer destroying the ordering.
+3. **Recency.** q43 and q10 ask about runway; the corpus holds a figure for every
+   month and retrieval returns the wrong one. A date filter needs a payload index,
+   which the collection does not have. Nothing tested so far touches this.
 4. **Generator evaluation** — never measured. Faithfulness, answer relevancy, and
    the abstention check on the five `missing_data` questions.
 5. **Long-form corpus tier** — 249 of 256 documents fit in one 750-token chunk and
