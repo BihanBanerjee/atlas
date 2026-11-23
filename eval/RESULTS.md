@@ -383,7 +383,6 @@ chunk_strategy semantic · p95 cut · floor 60 · ceiling 750 · top_k 5
 boundaries   BAAI/bge-small-en-v1.5, local and deterministic
 index        text-embedding-3-small (1536, cosine)
              qdrant, 371 chunks from 256 documents, median 117 tokens
-             (re-ingest required after the row 11 revert)
 retrieval    hybrid dense + BM25, fused with RRF, 20 candidates per arm
 rerank       BAAI/bge-reranker-large, 20 candidates -> 5
 AsyncConfig(max_concurrent=5, throttle_value=1) -- required above ~25 questions,
