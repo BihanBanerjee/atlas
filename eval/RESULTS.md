@@ -32,6 +32,7 @@ on 23 questions and did not survive the larger set. Differences smaller than
 | 6b | **750** | **100** | **5** | **body** | **bge-base** | **3** | **0.954** | **+0.001** | **0.903** | **+0.148** | $0.084 | 23s |
 | 7 | 750 | 100 | 5 | body | bge-base | 2 | 0.962 | — | 0.852 | — | $0.142 | 59s |
 | 8 | 750 | 100 | 5 | body | bge-base + BM25/RRF | 2 | 0.910 | −0.052 | 0.799 | −0.053 | $0.139 | 43s |
+| 9 | **semantic** | — | 5 | body | bge-base + BM25/RRF | 1 | 0.940 | +0.030 | 0.800 | +0.001 | $0.108 | 53s |
 
 Deltas in rows 2–4 are against row 1; rows 5–6 against row 2. Rerankers see 20
 candidates and return 5.
@@ -152,6 +153,111 @@ work — expansion, HyDE — not a fusion parameter.
 the baseline for `hybrid_enabled = True` runs and row 7 for dense. Not comparable
 across the two.
 
+### Correction, 23 Nov 2026 — row 8 was not a retrieval regression
+
+Everything above this line is what I believed at the time. It is wrong about the
+cause, and the mechanism I proposed is contradicted by direct measurement.
+
+The aggregate score said hybrid made things worse. It cannot say *which stage*
+made things worse, and I guessed. `eval/diagnose_arms.py` measures each arm
+separately against `acceptable_sources`, on **row 8's exact index** — 263 fixed
+chunks, same 40 questions:
+
+```
+arm        hit@5        rank1        MRR
+dense      85%          50%          0.618
+sparse     80%          52%          0.636
+fused      92%          55%          0.709     <- best of the three
+pipeline   85%          50%          0.629     <- after bge-base
+```
+
+**Hybrid raised hit@5 from 85% to 92%. The reranker returned it to 85%.** After
+the cross-encoder, hybrid's net contribution to MRR is +0.011 against dense alone
+— nothing. The gain was real and it was consumed downstream.
+
+What this overturns, specifically: I wrote that RRF was *"displacing good dense
+candidates out of the shortlist before the cross-encoder ever sees them."* It was
+not. RRF's own top-5 is the best ordering of the three arms, and a document in
+RRF's top 5 is necessarily inside the 20 candidates the reranker receives. Nothing
+was displaced before reranking. The reranker was handed a better list and returned
+a worse one.
+
+It discards correct answers outright, not merely reorders them — five documents
+that RRF had inside the top 5 are pushed out of the result set entirely:
+
+```
+q10: rank 1 -> None    q19: rank 1 -> None    q32: rank 1 -> None
+q31: rank 2 -> None    q44: rank 2 -> None
+```
+
+Across all 40 questions it improves 9 and worsens 11.
+
+**Hypothesis, not yet a result:** the reranker helps a mediocre ordering and hurts
+a good one. Dense alone places the answer first 50% of the time, so at row 6b
+`bge-base` had a lot to fix and gained +0.148 precision. RRF already reaches 55%,
+so the reranker now overwrites a better ordering with its own. That single story
+fits rows 6b, 7 and 8 together.
+
+**What this does not establish.** These are document-level hit/rank/MRR against
+qrels, not the LLM-judged contextual metrics in the table above. The two answer
+different questions and the numbers are not interchangeable. The comparison
+*between arms* is sound because all four are scored against the same qrels and the
+same index. Whether the judged metrics follow needs one run with `hybrid_enabled =
+true, rerank_enabled = false` — not yet done.
+
+Row 8's recorded numbers stand. Its verdict does not.
+
+---
+
+### 8 → 9 · semantic chunking
+
+0.940 / 0.800 against row 8's 0.910 / 0.799. Precision flat. Recall +0.030, sitting
+exactly on the noise floor, from a single run — so not a result either way.
+
+The same diagnostic on the semantic index says more than the aggregate did:
+
+```
+arm        fixed (263)   semantic (365)
+dense      85%           90%
+sparse     80%           82%
+fused      92%           92%
+pipeline   85%           88%
+reranker   MRR −0.080    MRR −0.071
+```
+
+**Semantic chunking improved the dense arm by 5 points of hit@5 and the full
+pipeline by 3.** It was not flat. The judged aggregate could not see it because the
+reranker is absorbing changes upstream of itself — the same component that ate
+hybrid's gain.
+
+The reranker degrades the fused ordering on *both* indexes, so this is not an
+artifact of chunking. It was true at row 8 and invisible there.
+
+Caveat on the chunking itself: the first semantic index had 151 of 508 chunks below
+the 60-token floor, because the floor was only enforced at seams and a document's
+final remainder escaped untested. Two chunks were the single word "Marcus". Row 9
+is measured after that fix — 9 below the floor, all of them whole documents shorter
+than the floor.
+
+**Row 9 is superseded and needs re-running.** It was measured on an index whose
+boundaries came from `text-embedding-3-small`, and that index no longer exists.
+Two ingests of an unchanged corpus produced **365 then 366 chunks**: the endpoint
+does not return identical vectors for identical input at realistic batch sizes
+(max|delta| 3.3e-03 over 66 windows), which moved the p95 threshold from
+0.531032150 to 0.531068338 and flipped one document's boundary. Harmless for
+ranking; not harmless for a cut-or-not decision at a threshold.
+
+Boundary detection now runs on a local encoder (`BAAI/bge-small-en-v1.5`, see
+`atlas/boundary.py`). Two full passes over the corpus are byte-identical, the
+window pass is free, and a semantic ingest takes 7s instead of 2m20s. The current
+index is **371 chunks**, median 117 tokens — within 1.4% of what the OpenAI
+boundaries gave, so the seams largely agree.
+
+The arm-level numbers below were taken on the 365/366-chunk index. The row-8
+correction above is unaffected: that was measured on the fixed 263-chunk index,
+which is deterministic.
+
+
 ---
 
 ## Current configuration
@@ -177,9 +283,10 @@ expected effect is near zero. Untested.
 - **Tuned on all 23 test questions.** No held-out set (23 is too few to split), so
   these figures are optimistic.
 - **n=1 on rows 1, 3, 5a, 5b.** Rows 2, 4, 6a and 6b have n=3.
-- The ±0.06 precision floor was measured on the dense configuration. With the
-  reranker the spread is 0.013 — better retrieval gives the judge less to be
-  uncertain about, so future deltas can be read more tightly.
+- The ±0.06 precision floor was measured on the dense configuration. I previously
+  wrote that the reranker tightened the spread to 0.013; that figure came from
+  three runs on 23 questions and did not survive the 40-question set, where it is
+  **±0.03 on both metrics**. See the note at the top of this file.
 - Chunk size and `top_k` are corpus-dependent; a different corpus needs the sweep
   re-run, not these values copied.
 
@@ -202,7 +309,16 @@ retrieved context says eight and nine from July documents. Retrieval finds the
 right neighbourhood and the wrong month. Nothing I have tested so far addresses
 this.
 
-1. **Semantic chunking** — next, with hybrid left on (compare against row 8).
-2. **DBSF weighted fusion** instead of RRF — after that.
-3. **Generator evaluation** — never measured. Faithfulness, answer relevancy, and
+1. **Hybrid on, reranker off** — one run. The arm diagnostic says this should be
+   the best configuration measured so far; this checks whether the judged metrics
+   agree with the document-level ones.
+2. **A stronger reranker** — `bge-reranker-large` or `bge-reranker-v2-m3`. Rerank
+   after fusion is sound in principle; `bge-base` is not strong enough to beat RRF
+   on this corpus. Local, free at inference.
+3. **DBSF weighted fusion** — deferred. Tuning fusion weights while a downstream
+   stage is degrading the ordering would be measuring noise.
+4. **Generator evaluation** — never measured. Faithfulness, answer relevancy, and
    the abstention check on the five `missing_data` questions.
+5. **Long-form corpus tier** — 249 of 256 documents fit in one 750-token chunk and
+   v0.1 already scored 0.957 recall, so there is very little headroom for any of
+   this to show in. Specified separately.
