@@ -296,7 +296,10 @@ fusion had done most of it.
 
 **Caveats.**
 
-- **n = 1.** Row 7 had two runs, row 6b had three.
+- **n = 1**, and it will stay n = 1. Row 7 had two runs, row 6b had three. A
+  confirming run was considered and declined on cost; row 10 is accepted as the
+  working baseline at a single run, and anything compared against it inherits
+  that uncertainty.
 - **Two things changed between 9 and 10**, not one: the reranker, and boundary
   detection moving to a local encoder. The arm diagnostic showed the boundary
   swap was retrieval-neutral (fused 92%/62%/0.733 against 92%/62%/0.736 on the
@@ -363,30 +366,42 @@ semantic chunking. Untested and now moot.
 
 ## Next
 
-One question still fails: **q02** ("who made the SSO promise"), recall 0.00 across
-every configuration. The judge's reason is that the retrieval context holds only
-July–August emails — the 11 June commitment thread never enters the 20 candidates,
-so the reranker cannot promote it. That is a dense retrieval miss, not a ranking
-one.
+Eight questions fail at row 10, and the split has changed since row 8:
 
-Hybrid search was the obvious candidate for it and it did not help — see row 8
-for why (the question carries no rare token; the document does).
+```
+recall     q02 0.50   q12 0.00   q43 0.00
+precision  q08 0.583  q10 0.50   q19 0.583  q29 0.50  q42 0.589
+```
 
-Two questions now fail on **recency** rather than ranking: q10 and q43 both ask
-about runway, the golden answer says seven months as of August 2026, and the
-retrieved context says eight and nine from July documents. Retrieval finds the
-right neighbourhood and the wrong month. Nothing I have tested so far addresses
-this.
+**q02** ("who made the SSO promise") is no longer the 0.00-recall case it was
+through rows 1–8. It now scores recall 0.50 and **precision 1.00** — every
+retrieved chunk is relevant and `gmail-northwind-renewal` lands at rank 1. The
+remaining half is the other acceptable source: the 11 June commitment thread
+still never reaches the candidates. So the earlier diagnosis was half right —
+there was a ranking component, which the reranker upgrade fixed, and a genuine
+dense retrieval miss underneath it, which nothing has fixed.
 
-1. **Repeat row 10.** n=1 on the headline number. A second run settles whether
-   0.880 holds and whether it genuinely clears row 7's 0.852.
-2. **DBSF weighted fusion** instead of RRF — worth trying now that the stage
-   after it is no longer destroying the ordering.
-3. **Recency.** q43 and q10 ask about runway; the corpus holds a figure for every
-   month and retrieval returns the wrong one. A date filter needs a payload index,
-   which the collection does not have. Nothing tested so far touches this.
-4. **Generator evaluation** — never measured. Faithfulness, answer relevancy, and
+**q43** remains 0.00 recall: runway, where the golden answer is seven months as
+of August 2026 and the context returns eight or nine from July documents. The
+corpus holds a figure for every month and retrieval picks the wrong one.
+
+**q10**, the other runway question, no longer fails on recall at all — it is now
+a precision failure at 0.50. The recency problem is narrower than it looked.
+
+The five precision failures all sit in the 0.50–0.59 band, which is the shape of
+one or two merely-on-topic chunks ranked above a relevant one rather than
+anything being missed.
+
+1. **DBSF weighted fusion** instead of RRF — worth trying now that the stage
+   after it is no longer destroying the ordering. Screen it with
+   `eval/diagnose_arms.py` first, which costs ~$0.00002 against the judged
+   suite's $0.11.
+2. **Recency.** q43 is the last 0.00-recall question: the corpus holds a runway
+   figure for every month and retrieval returns the wrong one. A date filter
+   needs a payload index, which the collection does not have. Nothing tested so
+   far touches this.
+3. **Generator evaluation** — never measured. Faithfulness, answer relevancy, and
    the abstention check on the five `missing_data` questions.
-5. **Long-form corpus tier** — 249 of 256 documents fit in one 750-token chunk and
+4. **Long-form corpus tier** — 249 of 256 documents fit in one 750-token chunk and
    v0.1 already scored 0.957 recall, so there is very little headroom for any of
    this to show in. Specified separately.
