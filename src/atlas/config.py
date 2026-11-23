@@ -93,10 +93,27 @@ class Settings(BaseSettings):
     # near it. Harmless for ranking, not harmless for a cut-or-not decision.
     #
     # Boundary detection is an easier task than retrieval -- it only needs
-    # consistent *relative* distance between neighbouring windows -- so a small
-    # model is appropriate. Changing this changes where chunks split, so the
-    # index must be rebuilt and results re-measured.
-    boundary_encoder: str = "BAAI/bge-small-en-v1.5"
+    # consistent *relative* distance between neighbouring windows. A small local
+    # model is therefore a reasonable fit, and bge-small-en-v1.5 was measured:
+    # deterministic and free, but worse, taking the dense arm from 90% to 85%
+    # hit@5 and MRR 0.656 to 0.615. The fused arm was unchanged at 92%, so the
+    # pipeline may absorb it, but there was no quality case for the swap.
+    #
+    # "openai" means reuse `embedding_model` -- the same vectors the index is
+    # built from. Its non-determinism is handled by the cache below rather than
+    # by changing models. Any other value is a sentence-transformers model name
+    # and runs locally. Changing this changes where chunks split, so the index
+    # must be rebuilt and results re-measured.
+    boundary_encoder: str = "openai"
+    # Cache boundary vectors by (model, text) hash. The OpenAI endpoint does not
+    # return identical vectors for identical input at realistic batch sizes --
+    # max|delta| 3.3e-03 over 66 windows -- which moves the percentile threshold
+    # and flips boundaries sitting near it: two ingests of an unchanged corpus
+    # gave 365 then 366 chunks. Caching makes a re-ingest read every vector back
+    # byte-identical, so chunking becomes reproducible without giving up the
+    # better boundaries. Reproducible *given the cache*: a cold cache on another
+    # machine re-requests and may land a boundary differently.
+    boundary_cache: bool = True
 
     # --- hybrid retrieval ---
     # Off by default. Turning it on changes the collection schema, so the index
@@ -154,6 +171,12 @@ class Settings(BaseSettings):
     @property
     def results_dir(self) -> Path:
         return REPO_ROOT / "eval" / "results"
+
+    @property
+    def boundary_cache_path(self) -> Path:
+        # Kept rather than treated as scratch: deleting it does not corrupt
+        # anything, but it does cost the reproducibility the cache exists for.
+        return REPO_ROOT / "data" / "boundary_cache.sqlite"
 
 
 # type: ignore[call-arg] -- pydantic-settings reads the required credentials from

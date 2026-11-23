@@ -8,3 +8,4 @@ eval/results/
 excalidraw.log
 .DS_Store
 .deepeval/
+data/boundary_cache.sqlite
