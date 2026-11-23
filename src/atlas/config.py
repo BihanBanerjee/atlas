@@ -100,11 +100,26 @@ class Settings(BaseSettings):
     # pipeline may absorb it, but there was no quality case for the swap.
     #
     # "openai" means reuse `embedding_model` -- the same vectors the index is
-    # built from. Its non-determinism is handled by the cache below rather than
-    # by changing models. Any other value is a sentence-transformers model name
-    # and runs locally. Changing this changes where chunks split, so the index
-    # must be rebuilt and results re-measured.
-    boundary_encoder: str = "openai"
+    # built from, with the cache below handling its non-determinism. Any other
+    # value is a sentence-transformers model name and runs locally. Changing
+    # this changes where chunks split, so the index must be rebuilt and results
+    # re-measured.
+    #
+    # Both were measured head to head, one variable, 40 questions:
+    #
+    #   bge-small (local)   judged precision 0.880   dense hit@5 85%
+    #   openai (cached)     judged precision 0.810   dense hit@5 90%
+    #
+    # The local encoder wins by 0.07 of precision, more than twice the noise
+    # floor, despite losing on the document-level dense arm. hit@5 only asks
+    # whether an acceptable source is in the top 5; Contextual Precision scores
+    # all five chunks by rank and punishes the irrelevant ones. OpenAI
+    # boundaries find the right document more often and drag in more plausible
+    # near-misses alongside it.
+    #
+    # So the local encoder is kept: better on the metric that counts, free, and
+    # deterministic without needing the cache at all.
+    boundary_encoder: str = "BAAI/bge-small-en-v1.5"
     # Cache boundary vectors by (model, text) hash. The OpenAI endpoint does not
     # return identical vectors for identical input at realistic batch sizes --
     # max|delta| 3.3e-03 over 66 windows -- which moves the percentile threshold
