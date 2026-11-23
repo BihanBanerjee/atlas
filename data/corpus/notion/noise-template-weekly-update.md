@@ -3,6 +3,7 @@ id: notion-noise-template-weekly-update
 source: notion
 type: page
 tier: noise
+generated: true
 title: "Template — Weekly update"
 parent: "Company / Templates"
 created: 2026-07-22

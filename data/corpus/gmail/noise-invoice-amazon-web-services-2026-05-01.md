@@ -3,6 +3,7 @@ id: gmail-noise-invoice-amazon-web-services-2026-05-01
 source: gmail
 type: email
 tier: noise
+generated: true
 subject: "Amazon Web Services — invoice for May 2026"
 thread_id: n-4010
 date: 2026-05-01

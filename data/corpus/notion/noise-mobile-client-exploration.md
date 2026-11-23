@@ -3,6 +3,7 @@ id: notion-noise-mobile-client-exploration
 source: notion
 type: page
 tier: noise
+generated: true
 title: "Mobile client exploration (archived)"
 parent: "Archive"
 created: 2026-02-22

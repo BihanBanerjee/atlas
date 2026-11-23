@@ -3,6 +3,7 @@ id: drive-noise-expenses-2026-07-28
 source: gdrive
 type: spreadsheet
 tier: noise
+generated: true
 title: "Expenses — July 2026"
 file_type: google_sheets
 folder: "Finance / Expenses"

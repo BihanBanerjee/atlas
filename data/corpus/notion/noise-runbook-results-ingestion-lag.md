@@ -3,6 +3,7 @@ id: notion-noise-runbook-results-ingestion-lag
 source: notion
 type: page
 tier: noise
+generated: true
 title: "Runbook — Results ingestion lag"
 parent: "Engineering / Runbooks"
 created: 2026-04-07

@@ -3,6 +3,7 @@ id: gmail-noise-newsletter-002
 source: gmail
 type: email
 tier: noise
+generated: true
 subject: "Cloud Cost Report — 18 March"
 thread_id: n-8002
 date: 2026-03-18

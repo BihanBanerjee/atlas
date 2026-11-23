@@ -3,6 +3,7 @@ id: gmail-noise-standup-2026-05-25
 source: gmail
 type: email
 tier: noise
+generated: true
 subject: "Standup — Monday 25 May"
 thread_id: n-5015
 date: 2026-05-25

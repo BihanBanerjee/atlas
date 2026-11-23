@@ -3,6 +3,7 @@ id: drive-noise-sow-01
 source: gdrive
 type: document
 tier: noise
+generated: true
 title: "Statement of Work — Design contractor"
 file_type: pdf
 folder: "Legal / Vendors"

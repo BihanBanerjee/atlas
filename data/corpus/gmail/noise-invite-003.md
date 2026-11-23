@@ -3,6 +3,7 @@ id: gmail-noise-invite-003
 source: gmail
 type: email
 tier: noise
+generated: true
 subject: "Invitation: Leadership sync"
 thread_id: n-7003
 date: 2026-07-17

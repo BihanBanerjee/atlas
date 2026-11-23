@@ -3,6 +3,7 @@ id: drive-noise-loadcon-2025-talk-slides
 source: gdrive
 type: document
 tier: noise
+generated: true
 title: "LoadCon 2025 — talk slides"
 file_type: pdf
 folder: "Conference / 2025"

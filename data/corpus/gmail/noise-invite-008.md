@@ -3,6 +3,7 @@ id: gmail-noise-invite-008
 source: gmail
 type: email
 tier: noise
+generated: true
 subject: "Invitation: Interview — technical"
 thread_id: n-7008
 date: 2026-03-02

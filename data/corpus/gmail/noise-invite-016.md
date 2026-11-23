@@ -3,6 +3,7 @@ id: gmail-noise-invite-016
 source: gmail
 type: email
 tier: noise
+generated: true
 subject: "Invitation: Sprint planning"
 thread_id: n-7016
 date: 2026-03-15

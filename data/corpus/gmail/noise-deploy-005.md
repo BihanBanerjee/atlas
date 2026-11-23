@@ -3,6 +3,7 @@ id: gmail-noise-deploy-005
 source: gmail
 type: email
 tier: noise
+generated: true
 subject: "Deploy succeeded — api"
 thread_id: n-6005
 date: 2026-04-18

@@ -3,6 +3,7 @@ id: gmail-noise-invoice-postmark-2026-05-04
 source: gmail
 type: email
 tier: noise
+generated: true
 subject: "Postmark — invoice for May 2026"
 thread_id: n-4012
 date: 2026-05-04

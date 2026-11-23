@@ -3,6 +3,7 @@ id: notion-noise-old-notes-2026-02-24
 source: notion
 type: page
 tier: noise
+generated: true
 title: "Team notes — 24 February 2026"
 parent: "Company / Meeting Notes / Archive"
 created: 2026-02-24

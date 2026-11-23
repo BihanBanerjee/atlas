@@ -3,6 +3,7 @@ id: gmail-noise-invoice-linear-2026-08-05
 source: gmail
 type: email
 tier: noise
+generated: true
 subject: "Linear — invoice for August 2026"
 thread_id: n-4024
 date: 2026-08-05

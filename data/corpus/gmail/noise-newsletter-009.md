@@ -3,6 +3,7 @@ id: gmail-noise-newsletter-009
 source: gmail
 type: email
 tier: noise
+generated: true
 subject: "Infra Digest — 16 July"
 thread_id: n-8009
 date: 2026-07-16

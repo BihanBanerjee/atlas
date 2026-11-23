@@ -3,6 +3,7 @@ id: notion-noise-tooling-and-access
 source: notion
 type: page
 tier: noise
+generated: true
 title: "Tooling and access"
 parent: "Company / Handbook"
 created: 2026-03-21

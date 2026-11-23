@@ -3,6 +3,7 @@ id: gmail-noise-newsletter-006
 source: gmail
 type: email
 tier: noise
+generated: true
 subject: "The Pragmatic Engineer — 16 May"
 thread_id: n-8006
 date: 2026-05-16

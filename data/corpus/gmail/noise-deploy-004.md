@@ -3,6 +3,7 @@ id: gmail-noise-deploy-004
 source: gmail
 type: email
 tier: noise
+generated: true
 subject: "Deploy succeeded — scheduler"
 thread_id: n-6004
 date: 2026-06-04

@@ -3,6 +3,7 @@ id: gmail-noise-newsletter-008
 source: gmail
 type: email
 tier: noise
+generated: true
 subject: "Go Weekly — 30 April"
 thread_id: n-8008
 date: 2026-04-30

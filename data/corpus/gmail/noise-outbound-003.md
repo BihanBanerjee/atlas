@@ -3,6 +3,7 @@ id: gmail-noise-outbound-003
 source: gmail
 type: email
 tier: noise
+generated: true
 subject: "Quick question, Ravi"
 thread_id: n-9003
 date: 2026-06-12

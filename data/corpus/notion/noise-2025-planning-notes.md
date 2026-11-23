@@ -3,6 +3,7 @@ id: notion-noise-2025-planning-notes
 source: notion
 type: page
 tier: noise
+generated: true
 title: "2025 planning notes (archived)"
 parent: "Archive"
 created: 2026-07-08

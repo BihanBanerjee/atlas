@@ -3,6 +3,7 @@ id: gmail-noise-standup-2026-07-31
 source: gmail
 type: email
 tier: noise
+generated: true
 subject: "Standup — Friday 31 July"
 thread_id: n-5024
 date: 2026-07-31

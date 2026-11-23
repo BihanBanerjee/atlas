@@ -3,6 +3,7 @@ id: drive-noise-onboarding-deck-2025-version
 source: gdrive
 type: document
 tier: noise
+generated: true
 title: "Onboarding deck — 2025 version"
 file_type: pdf
 folder: "People / Archive"

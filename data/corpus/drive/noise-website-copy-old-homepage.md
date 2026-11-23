@@ -3,6 +3,7 @@ id: drive-noise-website-copy-old-homepage
 source: gdrive
 type: document
 tier: noise
+generated: true
 title: "Website copy — old homepage"
 file_type: pdf
 folder: "Marketing / Archive"

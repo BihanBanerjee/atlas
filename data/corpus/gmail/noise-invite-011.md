@@ -3,6 +3,7 @@ id: gmail-noise-invite-011
 source: gmail
 type: email
 tier: noise
+generated: true
 subject: "Invitation: Weekly engineering sync"
 thread_id: n-7011
 date: 2026-03-26

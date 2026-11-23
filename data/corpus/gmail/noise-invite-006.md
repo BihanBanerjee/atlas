@@ -3,6 +3,7 @@ id: gmail-noise-invite-006
 source: gmail
 type: email
 tier: noise
+generated: true
 subject: "Invitation: Customer call"
 thread_id: n-7006
 date: 2026-07-14

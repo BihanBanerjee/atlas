@@ -3,6 +3,7 @@ id: gmail-noise-deploy-007
 source: gmail
 type: email
 tier: noise
+generated: true
 subject: "Deploy succeeded — results-ingest"
 thread_id: n-6007
 date: 2026-06-21

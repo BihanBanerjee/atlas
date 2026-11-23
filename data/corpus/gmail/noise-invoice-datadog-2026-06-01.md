@@ -3,6 +3,7 @@ id: gmail-noise-invoice-datadog-2026-06-01
 source: gmail
 type: email
 tier: noise
+generated: true
 subject: "Datadog — invoice for June 2026"
 thread_id: n-4015
 date: 2026-06-01

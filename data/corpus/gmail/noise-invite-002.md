@@ -3,6 +3,7 @@ id: gmail-noise-invite-002
 source: gmail
 type: email
 tier: noise
+generated: true
 subject: "Invitation: 1:1"
 thread_id: n-7002
 date: 2026-04-16

@@ -3,6 +3,7 @@ id: gmail-noise-invite-001
 source: gmail
 type: email
 tier: noise
+generated: true
 subject: "Invitation: Design review"
 thread_id: n-7001
 date: 2026-04-01

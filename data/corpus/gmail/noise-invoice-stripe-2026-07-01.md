@@ -3,6 +3,7 @@ id: gmail-noise-invoice-stripe-2026-07-01
 source: gmail
 type: email
 tier: noise
+generated: true
 subject: "Stripe — invoice for July 2026"
 thread_id: n-4022
 date: 2026-07-01

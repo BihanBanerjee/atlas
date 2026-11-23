@@ -3,6 +3,7 @@ id: drive-noise-metrics-export-2026-05-05
 source: gdrive
 type: spreadsheet
 tier: noise
+generated: true
 title: "Metrics export — May 2026 (superseded)"
 file_type: google_sheets
 folder: "Finance / Archive"

@@ -3,6 +3,7 @@ id: gmail-noise-invoice-sentry-2026-02-01
 source: gmail
 type: email
 tier: noise
+generated: true
 subject: "Sentry — invoice for February 2026"
 thread_id: n-4004
 date: 2026-02-01

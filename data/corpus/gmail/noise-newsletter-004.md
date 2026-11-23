@@ -3,6 +3,7 @@ id: gmail-noise-newsletter-004
 source: gmail
 type: email
 tier: noise
+generated: true
 subject: "SRE Weekly — 13 February"
 thread_id: n-8004
 date: 2026-02-13

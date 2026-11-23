@@ -3,6 +3,7 @@ id: drive-noise-logo-variants
 source: gdrive
 type: document
 tier: noise
+generated: true
 title: "Logo variants"
 file_type: pdf
 folder: "Marketing / Brand"

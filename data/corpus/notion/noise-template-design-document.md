@@ -3,6 +3,7 @@ id: notion-noise-template-design-document
 source: notion
 type: page
 tier: noise
+generated: true
 title: "Template — Design document"
 parent: "Company / Templates"
 created: 2026-05-11

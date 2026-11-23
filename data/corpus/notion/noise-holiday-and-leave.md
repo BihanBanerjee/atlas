@@ -3,6 +3,7 @@ id: notion-noise-holiday-and-leave
 source: notion
 type: page
 tier: noise
+generated: true
 title: "Holiday and leave"
 parent: "Company / Handbook"
 created: 2026-06-04

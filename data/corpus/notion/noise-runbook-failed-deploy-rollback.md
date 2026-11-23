@@ -3,6 +3,7 @@ id: notion-noise-runbook-failed-deploy-rollback
 source: notion
 type: page
 tier: noise
+generated: true
 title: "Runbook — Failed deploy rollback"
 parent: "Engineering / Runbooks"
 created: 2026-02-08

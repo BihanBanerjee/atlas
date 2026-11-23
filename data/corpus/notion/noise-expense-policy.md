@@ -3,6 +3,7 @@ id: notion-noise-expense-policy
 source: notion
 type: page
 tier: noise
+generated: true
 title: "Expense policy"
 parent: "Company / Handbook"
 created: 2026-05-05

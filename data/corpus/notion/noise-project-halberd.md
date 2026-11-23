@@ -3,6 +3,7 @@ id: notion-noise-project-halberd
 source: notion
 type: page
 tier: noise
+generated: true
 title: "Project Halberd (archived)"
 parent: "Archive"
 created: 2026-04-09

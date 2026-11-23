@@ -3,6 +3,7 @@ id: notion-noise-template-incident-report
 source: notion
 type: page
 tier: noise
+generated: true
 title: "Template — Incident report"
 parent: "Company / Templates"
 created: 2026-05-08

@@ -3,6 +3,7 @@ id: notion-noise-template-interview-feedback
 source: notion
 type: page
 tier: noise
+generated: true
 title: "Template — Interview feedback"
 parent: "Company / Templates"
 created: 2026-06-24

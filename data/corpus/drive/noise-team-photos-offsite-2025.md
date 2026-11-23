@@ -3,6 +3,7 @@ id: drive-noise-team-photos-offsite-2025
 source: gdrive
 type: document
 tier: noise
+generated: true
 title: "Team photos — offsite 2025"
 file_type: pdf
 folder: "Company / Photos"

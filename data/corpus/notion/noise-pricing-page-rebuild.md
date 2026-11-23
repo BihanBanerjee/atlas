@@ -3,6 +3,7 @@ id: notion-noise-pricing-page-rebuild
 source: notion
 type: page
 tier: noise
+generated: true
 title: "Pricing page rebuild (superseded)"
 parent: "Archive"
 created: 2026-04-26

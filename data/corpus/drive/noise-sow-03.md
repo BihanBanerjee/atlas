@@ -3,6 +3,7 @@ id: drive-noise-sow-03
 source: gdrive
 type: document
 tier: noise
+generated: true
 title: "Statement of Work — Penetration testing"
 file_type: pdf
 folder: "Legal / Vendors"

@@ -3,6 +3,7 @@ id: gmail-noise-invoice-github-2026-07-03
 source: gmail
 type: email
 tier: noise
+generated: true
 subject: "GitHub — invoice for July 2026"
 thread_id: n-4020
 date: 2026-07-03

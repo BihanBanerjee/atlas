@@ -3,6 +3,7 @@ id: drive-noise-brand-guidelines-v2
 source: gdrive
 type: document
 tier: noise
+generated: true
 title: "Brand guidelines v2 (archived)"
 file_type: pdf
 folder: "Marketing / Archive"

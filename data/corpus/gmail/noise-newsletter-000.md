@@ -3,6 +3,7 @@ id: gmail-noise-newsletter-000
 source: gmail
 type: email
 tier: noise
+generated: true
 subject: "Infra Digest — 21 March"
 thread_id: n-8000
 date: 2026-03-21

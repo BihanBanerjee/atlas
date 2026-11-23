@@ -3,6 +3,7 @@ id: notion-noise-runbook-certificate-renewal
 source: notion
 type: page
 tier: noise
+generated: true
 title: "Runbook — Certificate renewal"
 parent: "Engineering / Runbooks"
 created: 2026-06-20

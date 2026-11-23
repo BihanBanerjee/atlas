@@ -17,9 +17,14 @@ Two rules govern everything here:
    or anything else in FACTS.md. A noise document that contradicts the fact
    sheet reads as a retrieval bug during evaluation.
 
+Every document written here is stamped `generated: true`, and `--clean` deletes
+only documents carrying both that marker and `tier: noise`. Hand-written noise —
+the long-form distractors, which are noise by tier but too long to generate safely
+— declares `tier: noise` without the marker and survives regeneration.
+
 Usage:
     python scripts/generate_noise.py            # generate
-    python scripts/generate_noise.py --clean    # remove noise, then generate
+    python scripts/generate_noise.py --clean    # remove generated noise, then generate
 """
 
 from __future__ import annotations
@@ -83,26 +88,64 @@ def infra_cost(d: date, rng: random.Random) -> int:
     return base + rng.randint(-1_800, 1_800)
 
 
+# Stamped into every document this script writes, and required before `--clean`
+# will delete anything. `tier: noise` alone is not enough: the long-form tier adds
+# hand-written noise documents, which must declare `tier: noise` to be classified
+# correctly but must survive regeneration. Without this marker, `--clean` would
+# delete them and nothing would put them back.
+GENERATED_MARKER = "generated: true"
+
+
 def write_doc(path: Path, frontmatter: list[str], body: str) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    content = "---\n" + "\n".join(frontmatter) + "\n---\n\n" + body.strip() + "\n"
+    # Injected here rather than in each gen_* function, so there is one place that
+    # decides what "generated" means and no way to add a generator that forgets it.
+    fm = list(frontmatter)
+    if GENERATED_MARKER not in fm:
+        tier_at = next((i for i, line in enumerate(fm) if line.startswith("tier:")), None)
+        fm.insert(len(fm) if tier_at is None else tier_at + 1, GENERATED_MARKER)
+    content = "---\n" + "\n".join(fm) + "\n---\n\n" + body.strip() + "\n"
     path.write_text(content, encoding="utf-8")
 
 
-def clean_noise() -> int:
+def _frontmatter(path: Path) -> str:
     """
-    Delete only files whose frontmatter declares `tier: noise`.
+    The frontmatter block only, or "" if the file has none.
 
-    Signal and supporting documents are hand-written and must never be touched
-    by this script — the tier check is the guard, not the filename.
+    Read properly rather than by slicing the first N characters: a document with a
+    long participant list can push `tier:` past any fixed window, and a body that
+    merely mentions a tier must never be mistaken for a declaration.
+    """
+    text = path.read_text(encoding="utf-8")
+    if not text.startswith("---"):
+        return ""
+    end = text.find("\n---", 3)
+    return text[3:end] if end != -1 else ""
+
+
+def clean_noise() -> tuple[int, int]:
+    """
+    Delete files whose frontmatter declares BOTH `tier: noise` and `generated: true`.
+
+    Returns (removed, kept) where `kept` counts hand-written noise left in place.
+
+    Signal and supporting documents are hand-written and must never be touched by
+    this script — the tier check is the guard, not the filename. Hand-written noise
+    needs the same protection: it is noise by tier but not ours to delete, because
+    regeneration would not bring it back.
     """
     removed = 0
+    kept = 0
     for path in CORPUS.rglob("*.md"):
-        head = path.read_text(encoding="utf-8")[:400]
-        if "tier: noise" in head:
+        fm = _frontmatter(path)
+        if "tier: noise" not in fm:
+            continue
+        if GENERATED_MARKER in fm:
             path.unlink()
             removed += 1
-    return removed
+        else:
+            kept += 1
+    return removed, kept
 
 
 # --------------------------------------------------------------------------- #
@@ -384,7 +427,7 @@ def gen_cold_outbound(rng: random.Random, count: int) -> list[tuple[str, list[st
             "source: gmail",
             "type: email",
             "tier: noise",
-            f'subject: "Quick question, Ravi"',
+            'subject: "Quick question, Ravi"',
             f"thread_id: n-{9000 + i}",
             f"date: {d.isoformat()}",
             "participants:",
@@ -773,8 +816,10 @@ def main() -> None:
     args = parser.parse_args()
 
     if args.clean:
-        removed = clean_noise()
-        print(f"removed {removed} existing noise documents")
+        removed, kept = clean_noise()
+        print(f"removed {removed} generated noise documents")
+        if kept:
+            print(f"kept    {kept} hand-written noise documents (no '{GENERATED_MARKER}')")
 
     rng = random.Random(SEED)
 

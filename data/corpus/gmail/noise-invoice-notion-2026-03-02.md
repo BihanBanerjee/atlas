@@ -3,6 +3,7 @@ id: gmail-noise-invoice-notion-2026-03-02
 source: gmail
 type: email
 tier: noise
+generated: true
 subject: "Notion — invoice for March 2026"
 thread_id: n-4008
 date: 2026-03-02

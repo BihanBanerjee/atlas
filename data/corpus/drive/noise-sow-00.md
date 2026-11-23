@@ -3,6 +3,7 @@ id: drive-noise-sow-00
 source: gdrive
 type: document
 tier: noise
+generated: true
 title: "Statement of Work — Auditor"
 file_type: pdf
 folder: "Legal / Vendors"
