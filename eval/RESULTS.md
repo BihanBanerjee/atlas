@@ -33,7 +33,8 @@ on 23 questions and did not survive the larger set. Differences smaller than
 | 7 | 750 | 100 | 5 | body | bge-base | 2 | 0.962 | — | 0.852 | — | $0.142 | 59s |
 | 8 | 750 | 100 | 5 | body | bge-base + BM25/RRF | 2 | 0.910 | −0.052 | 0.799 | −0.053 | $0.139 | 43s |
 | 9 | **semantic** | — | 5 | body | bge-base + BM25/RRF | 1 | 0.940 | +0.030 | 0.800 | +0.001 | $0.108 | 53s |
-| **10** | semantic | — | 5 | body | **bge-large** + BM25/RRF | 1 | 0.940 | 0.000 | **0.880** | **+0.080** | $0.111 | 56s |
+| **10** | semantic *(bge-small bounds)* | — | 5 | body | **bge-large** + BM25/RRF | 1 | 0.940 | 0.000 | **0.880** | **+0.080** | $0.111 | 56s |
+| 11 | semantic *(openai bounds)* | — | 5 | body | bge-large + BM25/RRF | 1 | 0.930 | −0.010 | 0.810 | −0.070 | $0.111 | 53s |
 
 Deltas in rows 2–4 are against row 1; rows 5–6 against row 2. Rerankers see 20
 candidates and return 5.
@@ -313,6 +314,52 @@ fusion had done most of it.
 **Still failing:** q43 recall 0.00 — the runway recency problem, unchanged by any
 of this. q29 and q42 on precision.
 
+### 10 → 11 · OpenAI boundaries, and a prediction that was wrong
+
+One variable: `boundary_encoder`, `bge-small-en-v1.5` → `text-embedding-3-small`
+with a content-hash cache. **Precision 0.880 → 0.810. Recall 0.940 → 0.930.**
+Failures 8 → 11.
+
+Reverted afterwards, which restores row 10's configuration exactly — so row 10
+is the current system and there is no row 12 to measure.
+
+I changed it because the local encoder had measured worse at document level —
+dense hit@5 85% against OpenAI's 90%, MRR 0.615 against 0.656 — and because the
+cache gave reproducibility without giving up those boundaries. On the restored
+index `diagnose_arms` then showed the best pipeline figures yet, 95% hit@5 and
+0.747 MRR, reproduced across two runs.
+
+Every one of those numbers improved. Judged precision fell by 0.07, more than
+twice the noise floor.
+
+**Why the screen pointed the wrong way.** `hit@5` asks whether an acceptable
+source is *anywhere* in the top 5. Contextual Precision scores *all five* chunks,
+weighted by rank, and penalises the irrelevant ones. A configuration can find the
+right document more often and simultaneously drag in more plausible near-misses
+beside it. OpenAI boundaries do exactly that: better at locating the answer,
+worse at keeping the window clean.
+
+```
+boundaries            judged precision   dense hit@5   pipeline hit@5
+bge-small (local)              0.880          85%           92%
+text-embedding-3-small         0.810          90%           95%
+```
+
+**What this costs the method, not just the run.** `diagnose_arms` caught the
+reranker correctly because that effect was enormous — MRR −0.172. It failed here
+because the effect was small and lives in a metric the screen does not measure.
+**The document-level screen is reliable for large effects and unreliable for
+small ones.** Treat it as a filter for obvious breakage, not as a predictor of
+judged scores. Anything inside roughly ±0.05 of document-level MRR needs the
+judged suite or it is a guess.
+
+Reverted to `bge-small-en-v1.5`: better on the metric that counts, free,
+deterministic without needing the cache. The cache code stays — `boundary_encoder`
+is a real switch now, and the cache earns its place the moment OpenAI boundaries
+are used again.
+
+---
+
 ### An aside: the same defect, twice
 
 Two `diagnose_arms` runs minutes apart on an unchanged index gave fused
@@ -336,6 +383,7 @@ chunk_strategy semantic · p95 cut · floor 60 · ceiling 750 · top_k 5
 boundaries   BAAI/bge-small-en-v1.5, local and deterministic
 index        text-embedding-3-small (1536, cosine)
              qdrant, 371 chunks from 256 documents, median 117 tokens
+             (re-ingest required after the row 11 revert)
 retrieval    hybrid dense + BM25, fused with RRF, 20 candidates per arm
 rerank       BAAI/bge-reranker-large, 20 candidates -> 5
 AsyncConfig(max_concurrent=5, throttle_value=1) -- required above ~25 questions,
@@ -393,9 +441,10 @@ one or two merely-on-topic chunks ranked above a relevant one rather than
 anything being missed.
 
 1. **DBSF weighted fusion** instead of RRF — worth trying now that the stage
-   after it is no longer destroying the ordering. Screen it with
-   `eval/diagnose_arms.py` first, which costs ~$0.00002 against the judged
-   suite's $0.11.
+   after it is no longer destroying the ordering. `eval/diagnose_arms.py` costs
+   ~$0.00002 and is worth running first, but read row 11 before trusting it:
+   the screen is a filter for obvious breakage, not a predictor of judged
+   scores, and it pointed the wrong way on a 0.07 precision move.
 2. **Recency.** q43 is the last 0.00-recall question: the corpus holds a runway
    figure for every month and retrieval returns the wrong one. A date filter
    needs a payload index, which the collection does not have. Nothing tested so
