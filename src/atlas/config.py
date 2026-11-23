@@ -86,6 +86,17 @@ class Settings(BaseSettings):
     # low distances never splits at all.
     semantic_min_tokens: int = 60
     semantic_max_tokens: int = 750
+    # The encoder that measures distance between adjacent windows. Local and
+    # deliberately so: the OpenAI endpoint returns slightly different vectors for
+    # identical input at realistic batch sizes (max|delta| 3.3e-03 over 66
+    # windows), which moves a percentile threshold and flips boundaries that sit
+    # near it. Harmless for ranking, not harmless for a cut-or-not decision.
+    #
+    # Boundary detection is an easier task than retrieval -- it only needs
+    # consistent *relative* distance between neighbouring windows -- so a small
+    # model is appropriate. Changing this changes where chunks split, so the
+    # index must be rebuilt and results re-measured.
+    boundary_encoder: str = "BAAI/bge-small-en-v1.5"
 
     # --- hybrid retrieval ---
     # Off by default. Turning it on changes the collection schema, so the index

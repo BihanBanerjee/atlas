@@ -201,6 +201,7 @@ def main() -> None:
         "semantic_percentile": _if("semantic", settings.semantic_percentile),
         "semantic_min_tokens": _if("semantic", settings.semantic_min_tokens),
         "semantic_max_tokens": _if("semantic", settings.semantic_max_tokens),
+        "boundary_encoder": _if("semantic", settings.boundary_encoder),
         "embedded_text": EMBED_FORMAT,
         "embedding_model": settings.embedding_model,
         "embedding_dim": settings.embedding_dim,
