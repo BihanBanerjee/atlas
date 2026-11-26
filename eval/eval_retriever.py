@@ -160,7 +160,7 @@ def _if(strategy: str, value):
 def main() -> None:
     # No arguments, deliberately. Every tunable is read from settings, which is
     # what the application itself reads -- a --top-k flag would let this script
-    # measure k=8 while synthesize.py still ran k=5, and the score would not
+    # measure k=8 while generate.py still ran k=5, and the score would not
     # describe the system. Change .env, then run this.
     top_k = settings.top_k
 

@@ -53,10 +53,10 @@ class Settings(BaseSettings):
     embedding_model: str = "text-embedding-3-small"
     embedding_dim: int = 1536
 
-    # Held fixed across every version. Changing the synthesis model mid-project
+    # Held fixed across every version. Changing the generation model mid-project
     # contaminates every eval delta after it -- can't no longer tell whether an
     # improvement came from retrieval work or from the model upgrade.
-    synthesis_model: str = "claude-haiku-4-5"
+    generation_model: str = "claude-haiku-4-5"
 
     # --- retrieval parameters ---
     chunk_tokens: int = 750

@@ -48,7 +48,7 @@ def complete(system: str, user: str, max_tokens: int = 2048) -> LLMResponse:
     """
 
     message = _client.messages.create(
-        model=settings.synthesis_model,
+        model=settings.generation_model,
         max_tokens=max_tokens,
         system=system,
         messages=[{"role": "user", "content": user}]
