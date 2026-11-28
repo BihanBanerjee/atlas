@@ -8,7 +8,9 @@ authors = [
 ]
 requires-python = ">=3.12,<3.13"
 dependencies = [
-    "anthropic>=0.124.0",
+    # Capped below 2.0: the 2.x SDK removes temperature from messages.create,
+    # and llm.py passes it. Verified honoured by claude-haiku-4-5 on 0.124.x.
+    "anthropic>=0.124.0,<2",
     "numpy>=2.0",
     "openai>=3.3.1",
     "pydantic>=2.13.4",
