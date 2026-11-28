@@ -1,0 +1,509 @@
+{
+  "_meta": {
+    "description": "Golden question/context pairs for component-level evaluation of the generator, in isolation from the retriever.",
+    "built_by": "scripts/build_faithfulness_dataset.py",
+    "metrics": [
+      "faithfulness",
+      "answer relevancy"
+    ],
+    "no_ideal_answer": "Neither metric reads an expected answer. Faithfulness compares the answer to the context; answer relevancy compares it to the question.",
+    "context_is_verbatim": "Chunk text copied from atlas_mine_v01 at build time, byte-identical to what is indexed.",
+    "collection_points": 371,
+    "local_chunking_config": {
+      "strategy": "semantic",
+      "boundary_encoder": "BAAI/bge-small-en-v1.5",
+      "percentile": 95,
+      "min_tokens": 60,
+      "max_tokens": 750
+    },
+    "caveat": "The context reflects the chunking live when this was built. It stays valid for measuring the generator, because the text is frozen here -- but after a re-chunk it no longer describes what retrieval would return, and must not be read as though it does.",
+    "excludes": "The five missing_data refusal questions. A refusal makes almost no claims, so faithfulness scores it trivially. Abstention is a separate concern with its own golden file.",
+    "questions": 24
+  },
+  "questions": [
+    {
+      "id": "f01",
+      "question": "What did Tensile commit to Northwind on SAML SSO, and by what date?",
+      "ideal_context": [
+        "Spoke with the team. Good news on both counts. Audit log export with twelve month retention is in the Q3 build, targeting end of August. I'll confirm the exact date once the sprint plan firms up. On identity — we'll have SAML SSO shipped for you by September 15. That puts you two weeks clear of the audit and ahead of the renewal date. I'll send a written summary next week that you can take to your CTO. Marcus Oyelaran\nHead of Sales, Tensile\ntensile.dev"
+      ],
+      "source_chunks": [
+        "gmail-northwind-sso-commitment#2"
+      ],
+      "source_meta": [
+        {
+          "source": "gmail",
+          "title": "Q3 planning + enterprise requirements",
+          "date": "2026-06-11"
+        }
+      ],
+      "shape": "near-miss",
+      "tempts": "The same chunk also promises audit log export by end of August. An unfaithful answer merges the two dates or attributes the September date to both."
+    },
+    {
+      "id": "f02",
+      "question": "Why was SAML SSO deferred out of the Q3 roadmap?",
+      "ideal_context": [
+        "# Product Roadmap — Q3 2026 **Owner:** Dana Whitfield · **Status:** In progress · **Period:** July – September 2026 ## Committed | Item | Target | Status | Owner |\n|---|---|---|---|\n| Distributed tracing — GA | Mid-August | On track | Dana |\n| Self-serve onboarding v2 | July | Shipped | Dana |\n| Billing revamp | September | Not started | Dana |\n| Audit log export (12-month retention) | End of August | In progress | Dana | Audit log export is scoped against Northwind's compliance requirement. Twelve months retention, customer-initiated export, CSV and JSON. ## Deferred to Q4 | Item | Reason |\n|---|---|\n| SAML SSO / enterprise identity | Tracing GA and the billing work consume the quarter. Identity is a multi-week build with an auth-path migration we don't want to run alongside a GA. Scheduled Q4 — see Q4 roadmap. |\n| Data residency (EU) | Dependent on infrastructure work not yet scoped. |\n| Role-based access control | Sequenced behind SSO."
+      ],
+      "source_chunks": [
+        "notion-roadmap-q3-2026#0"
+      ],
+      "source_meta": [
+        {
+          "source": "notion",
+          "title": "Product Roadmap — Q3 2026",
+          "date": "2026-07-02"
+        }
+      ],
+      "shape": "why",
+      "tempts": "The reason given is capacity and an auth-path migration. A model reaching for completeness adds commercial consequences, the Northwind renewal, or a revenue figure -- none of which is here."
+    },
+    {
+      "id": "f03",
+      "question": "How long is the SAML SSO build estimated to take, and when would it finish?",
+      "ideal_context": [
+        "## SAML SSO — scope The largest item of the quarter and the one carrying the most commercial weight. - SAML 2.0, Okta first, Azure AD in the same build\n- SCIM provisioning is explicitly out of scope for this pass\n- Auth-path migration for existing accounts is the risk — every current user is on individual credentials and there is no clean cutover without a maintenance window\n- Estimate 5–7 weeks with two engineers. October start puts completion in mid-to-late November. ## Notes Enterprise identity has now been deferred out of two consecutive quarters. It was raised in the Q2 retrospective as an unscheduled blocker, deferred again in Q3 planning on capacity grounds, and is now the anchor item for Q4. Sales has been asked to set expectations accordingly on any deal where identity is a gating requirement."
+      ],
+      "source_chunks": [
+        "notion-roadmap-q4-2026#1"
+      ],
+      "source_meta": [
+        {
+          "source": "notion",
+          "title": "Product Roadmap — Q4 2026",
+          "date": "2026-07-29"
+        }
+      ],
+      "shape": "partial",
+      "tempts": "5-7 weeks and mid-to-late November are both stated. Whether it would land before Northwind's 30 September renewal is not, and is the obvious thing to volunteer."
+    },
+    {
+      "id": "f04",
+      "question": "What did Linda Marsh say she needs before she will discuss the renewal price?",
+      "ideal_context": [
+        "I'm going to be direct, and I'm adding Ravi because I think he should see this. I can't take a 14% uplift to procurement while an open commitment from June is unresolved. You told me on 11 June that SAML SSO would be shipped by 15 September. My access audit is the week of 21 September and the renewal is the week after that. It's now August and I have had no delivery date, no build update, and nothing in writing beyond that email. So before we discuss price: I need written confirmation that SAML SSO ships by 15 September. If that date holds, the uplift is a conversation I'm willing to have. If it doesn't, I need to know now, because my alternative is requesting an audit exception and that requires our CISO's sign-off with three weeks of notice. My procurement deadline for the renewal paperwork is 5 September. Linda Marsh\nVP Engineering, Northwind Logistics --- ## Message 3 — 6 August 2026, 07:15 **From:** Ravi Menon <ravi@tensile.dev>\n**To:** Linda Marsh <linda.marsh@northwindlogistics.com>\n**Cc:** Marcus Oyelaran <marcus@tensile.dev>\n**Subject:** Re: Northwind renewal — commercial terms Linda,"
+      ],
+      "source_chunks": [
+        "gmail-northwind-renewal#1"
+      ],
+      "source_meta": [
+        {
+          "source": "gmail",
+          "title": "Northwind renewal — commercial terms",
+          "date": "2026-08-06"
+        }
+      ],
+      "shape": "partial",
+      "tempts": "Her condition is stated precisely. Whether Tensile can meet it is not in this chunk, and a model that knows the roadmap answer will want to supply it."
+    },
+    {
+      "id": "f05",
+      "question": "What renewal price did Marcus propose to Northwind, and what did he give as justification?",
+      "ideal_context": [
+        "## Message 1 — 3 August 2026, 10:20 **From:** Marcus Oyelaran <marcus@tensile.dev>\n**To:** Linda Marsh <linda.marsh@northwindlogistics.com>\n**Subject:** Northwind renewal — commercial terms Linda, Starting the renewal conversation early so neither of us is doing this in the last week of September. Current term ends 30 September at $84,000. For the coming year we'd propose $96,000, reflecting the seat growth on your side — you've gone from 40 to 58 active users since signature — and the tracing module, which goes GA this month and would be included rather than an add-on. Happy to walk through the detail whenever suits. Marcus Oyelaran\nHead of Sales, Tensile --- ## Message 2 — 5 August 2026, 08:47 **From:** Linda Marsh <linda.marsh@northwindlogistics.com>\n**To:** Marcus Oyelaran <marcus@tensile.dev>\n**Cc:** Ravi Menon <ravi@tensile.dev>\n**Subject:** Re: Northwind renewal — commercial terms Marcus,"
+      ],
+      "source_chunks": [
+        "gmail-northwind-renewal#0"
+      ],
+      "source_meta": [
+        {
+          "source": "gmail",
+          "title": "Northwind renewal — commercial terms",
+          "date": "2026-08-06"
+        }
+      ],
+      "shape": "near-miss",
+      "tempts": "$84,000, $96,000, 40 users and 58 users all appear in one short passage. The uplift percentage is not stated and invites arithmetic presented as a quoted figure."
+    },
+    {
+      "id": "f06",
+      "question": "According to the customer commitments log, what has Tensile committed to Northwind Logistics?",
+      "ideal_context": [
+        "# Customer Commitments Log **Owner:** Marcus Oyelaran · **Reviewed:** monthly, in the sales and product sync Anything we have told a customer we will deliver, with a date attached, belongs on this page. If it isn't here, product isn't tracking it. ## Open commitments | Customer | Commitment | Committed on | Due | Owner | Status | Source |\n|---|---|---|---|---|---|---|\n| Northwind Logistics | Audit log export, 12-month retention, customer-initiated | 11 Jun 2026 | End of August 2026 | Dana | On track | Email — enterprise requirements thread |\n| Bastion Freight | SOC 2 Type II report once available | 3 May 2026 | On completion | Ravi | Blocked — observation window starts October | Renewal call |\n| Calder Systems | SLA upgrade to 99.9% with credits | 22 Apr 2026 | 1 Oct 2026 | Marcus | On track | Contract amendment |\n| Ravelin Health | Quarterly usage review | 15 Mar 2026 | Ongoing | Marcus | On track | Onboarding call | ## Closed commitments | Customer | Commitment | Closed | Notes |\n|---|---|---|---|\n| Calder Systems | Results diffing in CI | Feb 2026 | Shipped |\n| Meridian Grid | Custom report export | May 2026 | Shipped |\n| Northwind Logistics | Onboarding session for new team | Apr 2026 | Delivered | ## Process"
+      ],
+      "source_chunks": [
+        "notion-customer-commitments-log#0"
+      ],
+      "source_meta": [
+        {
+          "source": "notion",
+          "title": "Customer Commitments Log",
+          "date": "2026-07-14"
+        }
+      ],
+      "shape": "gap",
+      "tempts": "The sharpest trap in the set. The log records audit log export and a closed onboarding session. It does NOT record the SAML SSO promise -- that absence is the point of the document in the corpus. A model that has seen SSO discussed everywhere else will want to list it here."
+    },
+    {
+      "id": "f07",
+      "question": "Why does the customer commitments log exist, and what problem is it meant to prevent?",
+      "ideal_context": [
+        "Commitments get added here by whoever made them, within one working day. Marcus reviews the page in the monthly sales and product sync and confirms each item still has an owner and a live date. Gaps in this page have caused problems before. If a commitment lives only in someone's inbox, product has no way to know it exists."
+      ],
+      "source_chunks": [
+        "notion-customer-commitments-log#1"
+      ],
+      "source_meta": [
+        {
+          "source": "notion",
+          "title": "Customer Commitments Log",
+          "date": "2026-07-14"
+        }
+      ],
+      "shape": "why",
+      "tempts": "The stated reason is general. Naming Northwind or SSO as the incident behind it would be invention -- the chunk says only 'gaps in this page have caused problems before'."
+    },
+    {
+      "id": "f08",
+      "question": "What were Fernpath's headline terms in the term sheet?",
+      "ideal_context": [
+        "Attached. We're proposing $12M at $52M post-money, with a 12% option pool established pre-close. We'd take one board seat — I'd sit on it — taking the board to five with the independent seat still to fill. Standard 1x non-participating preference, no anti-dilution beyond broad-based weighted average. Exclusivity is thirty days from signature, so through 21 August if you sign this week. I'll say the obvious thing: we moved quickly because we think the enterprise motion you're about to run is the whole story here, and we'd rather be early to it than tidy. Take the time you need on the terms, but I don't want the timeline to be the reason this doesn't work. Priya Kothari\nFernpath Capital --- ## Message 2 — 23 July 2026, 08:05 **From:** Ravi Menon <ravi@tensile.dev>\n**To:** Priya Kothari <priya@fernpath.vc>\n**Subject:** Re: Tensile — term sheet Priya,"
+      ],
+      "source_chunks": [
+        "gmail-fernpath-term-sheet#1"
+      ],
+      "source_meta": [
+        {
+          "source": "gmail",
+          "title": "Tensile — term sheet",
+          "date": "2026-07-29"
+        }
+      ],
+      "shape": "near-miss",
+      "tempts": "$12M, $52M, 12%, one board seat, five board members, thirty days, 21 August. Seven figures in one short chunk; the 12% pool was later renegotiated, but not in this chunk."
+    },
+    {
+      "id": "f09",
+      "question": "Why did Ravi object to the 12% option pool?",
+      "ideal_context": [
+        "Received, thank you. Genuinely pleased. Give me until Monday to go through it properly with Dana and with Nadia. One thing I can flag now — the 12% pool coming out of pre-money is doing a lot of quiet work, and I'd like to talk about that specifically rather than have it be the thing we discover we disagree about in week three. Ravi --- ## Message 3 — 27 July 2026, 11:32 **From:** Ravi Menon <ravi@tensile.dev>\n**To:** Priya Kothari <priya@fernpath.vc>\n**Subject:** Re: Tensile — term sheet Priya, Three things, in order of how much I care. **Option pool.** 12% pre-money is effectively a $6M valuation adjustment dressed as an operational number. We have a hiring plan for the next eighteen months — Head of Engineering, three engineers, two on the commercial side. That plan needs about 6.5%. Even with room for error, 12% is more than we can defend. I'd like to land at 10%. **Board.** No issue with the seat. I would like us to commit to filling the independent seat within six months of close rather than leaving it open indefinitely. We've had it vacant since the seed and it hasn't served us well. **Preference and anti-dilution.** No objection, both are as expected. Everything else I'm comfortable with. Ravi --- ## Message 4 — 29 July 2026, 15:10 **From:** Priya Kothari <priya@fernpath.vc>\n**To:** Ravi Menon <ravi@tensile.dev>\n**Subject:** Re: Tensile — term sheet Ravi,"
+      ],
+      "source_chunks": [
+        "gmail-fernpath-term-sheet#2"
+      ],
+      "source_meta": [
+        {
+          "source": "gmail",
+          "title": "Tensile — term sheet",
+          "date": "2026-07-29"
+        }
+      ],
+      "shape": "why",
+      "tempts": "His reasoning is explicit, including the $6M characterisation and the 6.5% the hiring plan needs. What Fernpath settled on is in a different chunk and is the natural thing to append."
+    },
+    {
+      "id": "f10",
+      "question": "What option pool did Fernpath propose, and what did they agree to?",
+      "ideal_context": [
+        "Attached. We're proposing $12M at $52M post-money, with a 12% option pool established pre-close. We'd take one board seat — I'd sit on it — taking the board to five with the independent seat still to fill. Standard 1x non-participating preference, no anti-dilution beyond broad-based weighted average. Exclusivity is thirty days from signature, so through 21 August if you sign this week. I'll say the obvious thing: we moved quickly because we think the enterprise motion you're about to run is the whole story here, and we'd rather be early to it than tidy. Take the time you need on the terms, but I don't want the timeline to be the reason this doesn't work. Priya Kothari\nFernpath Capital --- ## Message 2 — 23 July 2026, 08:05 **From:** Ravi Menon <ravi@tensile.dev>\n**To:** Priya Kothari <priya@fernpath.vc>\n**Subject:** Re: Tensile — term sheet Priya,",
+        "Reasonable on all three. Pool: we can go to 10.5%. Below that I'd be arguing with my own partnership about a hiring plan I can't underwrite, and I'd rather spend that credibility on something else. Board: happy to write the six-month commitment into the docs. Agreed it shouldn't sit empty. Preference and anti-dilution stand as drafted. If 10.5% works, sign and we'll start diligence Monday. I'd like reference calls in the first two weeks — customers, and two of your investors. Priya"
+      ],
+      "source_chunks": [
+        "gmail-fernpath-term-sheet#1",
+        "gmail-fernpath-term-sheet#3"
+      ],
+      "source_meta": [
+        {
+          "source": "gmail",
+          "title": "Tensile — term sheet",
+          "date": "2026-07-29"
+        },
+        {
+          "source": "gmail",
+          "title": "Tensile — term sheet",
+          "date": "2026-07-29"
+        }
+      ],
+      "shape": "partial",
+      "tempts": "Needs both chunks: 12% proposed, 10.5% agreed. Ravi asked for 10%, which is in neither -- a model that states 10% as the outcome has filled a gap rather than read one."
+    },
+    {
+      "id": "f11",
+      "question": "What did Aster Ventures indicate they would offer, and why did the conversation end?",
+      "ideal_context": [
+        "## Message 1 — 4 June 2026, 17:22 **From:** James Okonkwo <james@asterventures.com>\n**To:** Ravi Menon <ravi@tensile.dev>\n**Subject:** Following up — Tensile Ravi, Good conversation this afternoon, thanks for the time. The thing I keep coming back to is your net revenue retention. 118% at your ACV, in a category where most companies are fighting to hold 105%, is the number that made me want the meeting in the first place and it held up under questioning. What I'd want to understand better before we go further: how much of the expansion is seat growth versus module attach, and what happens to both when you hit accounts that need enterprise controls you don't have yet. Could you send the last six months of cohort data? Happy to sign whatever you need first. James Okonkwo\nAster Ventures --- ## Message 2 — 22 June 2026, 10:14 **From:** James Okonkwo <james@asterventures.com>\n**To:** Ravi Menon <ravi@tensile.dev>\n**Subject:** Re: Following up — Tensile Ravi, Thanks for the cohort data — it answered the question. Module attach is doing more of the work than I expected, which I read as a good sign. Where we'd be, directionally: something around $10M at $45M post. I want to be transparent that I'd need to bring this to the full partnership on 9 July before that becomes anything you can rely on, and our process from there is another three to four weeks. I know that's slower than you'd like. I'd rather tell you the real timeline than a flattering one. James",
+        "--- ## Message 3 — 24 July 2026, 09:40 **From:** Ravi Menon <ravi@tensile.dev>\n**To:** James Okonkwo <james@asterventures.com>\n**Subject:** Re: Following up — Tensile James, I owe you a straight answer rather than a slow fade. We received a term sheet on Tuesday and I expect to sign it this week. It carries thirty days of exclusivity, so I can't continue a conversation with you during that period. I want to be clear that this isn't a comment on Aster or on your process. You were more useful to think with than anyone else we spoke to, and the cohort question you asked in June ended up reshaping how we present the business. The timing simply didn't line up. If circumstances change I'll be in touch immediately. Ravi ---"
+      ],
+      "source_chunks": [
+        "gmail-aster-competing-interest#0",
+        "gmail-aster-competing-interest#1"
+      ],
+      "source_meta": [
+        {
+          "source": "gmail",
+          "title": "Following up — Tensile",
+          "date": "2026-07-24"
+        },
+        {
+          "source": "gmail",
+          "title": "Following up — Tensile",
+          "date": "2026-07-24"
+        }
+      ],
+      "shape": "partial",
+      "tempts": "$10M at $45M post is stated as directional and explicitly not yet reliable. The exclusivity that ended it is in the second chunk. Naming Fernpath as the source of the term sheet would be invention -- Ravi never names them to James."
+    },
+    {
+      "id": "f12",
+      "question": "What is Elena Vasquez asking for, and how does it compare to the approved band?",
+      "ideal_context": [
+        "## Message 1 — 3 August 2026, 20:14 **From:** Elena Vasquez <elena.vasquez@protonmail.com>\n**To:** Ravi Menon <ravi@tensile.dev>\n**Subject:** Next steps Ravi, Thank you for Thursday — and please pass on my thanks to Dana. The design review conversation was the most enjoyable interview I've had in a long time, largely because nobody was performing. I've thought about it over the weekend and I want to be straightforward about where I am, because I'd rather we find out now if this doesn't work. I'm at $248,000 base today with a bonus that has paid out around 15% for the last two years. I'm not unhappy, which I mention only so you know I'm not looking to escape something. What I don't have is scope — I run three teams inside an org where the interesting architectural decisions were made two years before I arrived. For a move at this stage I'd be looking at **$265,000 base and 0.9%**. The equity matters more to me than the base, and I'd trade in that direction if it helps. I should also say there's one other conversation in progress. It's early and there's no offer, and I'm not raising it as leverage — I'd just rather you hear it from me. My notice is eight weeks, which I know is longer than ideal. Elena Vasquez",
+        "I'll be equally direct in return. The band we approved for this role in May is $240,000 base and up to 0.8%. Your number is above both, and anything above the band needs board approval before I can put an offer out. That isn't a no. It means I need to have a conversation with Nadia, and I'd rather do that with a clear view of what we'd be getting than argue for a number in the abstract. Your references came back on 30 July and they were the strongest I've taken in some time — two people independently described the same thing about how you handled a re-platforming, which was the specific risk we were worried about. The eight weeks I'm relaxed about. We've waited three months already; another two won't change anything. Our decision date is 22 August. I'll come back to you well before then. Ravi"
+      ],
+      "source_chunks": [
+        "gmail-comp-discussion-vasquez#0",
+        "gmail-comp-discussion-vasquez#2"
+      ],
+      "source_meta": [
+        {
+          "source": "gmail",
+          "title": "Next steps",
+          "date": "2026-08-06"
+        },
+        {
+          "source": "gmail",
+          "title": "Next steps",
+          "date": "2026-08-06"
+        }
+      ],
+      "shape": "near-miss",
+      "tempts": "$248,000 current, $265,000 asking, $240,000 band, 0.9% and 0.8%, plus a 15% bonus. The $25,000 gap is derivable and correct to state; a model that quotes it as though the context said it is still faithful, one that invents a different gap is not."
+    },
+    {
+      "id": "f13",
+      "question": "What did Tom Brennan say he has not done before?",
+      "ideal_context": [
+        "## Message 1 — 4 August 2026, 19:38 **From:** Tom Brennan <t.brennan@fastmail.com>\n**To:** Ravi Menon <ravi@tensile.dev>\n**Subject:** Thanks + where I'm at Ravi, Thanks for the loop last week. The planning case study was the part I enjoyed most, which probably tells you something about how I'd want to spend my time. Being upfront on numbers so we're not circling. I'm at $198,000 base now, no meaningful equity — the company recapped in 2024 and what I hold is effectively underwater. For this role I'd be looking at **$225,000 base and 0.6%**. I'll also say the honest thing: this would be a step up for me. I've led six engineers, but informally, and I've never owned a hiring plan or a quarterly planning process end to end. I think I'm ready and I'd rather tell you that plainly than have you find out in month three. If you're weighing me against someone who has already done it, I understand which way that goes. Notice is four weeks. Tom Brennan"
+      ],
+      "source_chunks": [
+        "gmail-comp-discussion-brennan#0"
+      ],
+      "source_meta": [
+        {
+          "source": "gmail",
+          "title": "Thanks + where I'm at",
+          "date": "2026-08-07"
+        }
+      ],
+      "shape": "gap",
+      "tempts": "He is specific: never owned a hiring plan or a quarterly planning process, led six engineers only informally. The comparison to Elena is not in this chunk and is what a model will reach for."
+    },
+    {
+      "id": "f14",
+      "question": "What did the July investor update report for runway, and what did Ravi say about it?",
+      "ideal_context": [
+        "Two pieces of news this month, one of them significant. Adding Priya from Fernpath to this list going forward. **Metrics** - ARR: $1,040,000 (+10.6% MoM)\n- MRR: $86,700\n- Net burn: $188,000\n- Cash: $1.53M\n- Runway: 8 months\n- Customers: 61\n- Team: 14 **What went well**",
+        "We crossed $1M ARR. It took twenty-nine months and I'm aware it's an arbitrary line, but it's the one people ask about. We received a term sheet from Fernpath Capital on 22 July — $12M at $52M post-money. Exclusivity runs thirty days, so through 21 August. Priya and her team moved faster and with more conviction than anyone else we spoke to, and the diligence process so far has been genuinely useful rather than extractive. Growth recovered to 10.6% after the June dip. The pricing page revert did most of that. Reference checks on our lead Head of Engineering candidate came back on 30 July and were strong. **What didn't** Burn is up again and runway is now 8 months. That's fine given where the raise is, but it does mean the raise has to land. The Northwind situation I flagged in June has not improved. Their renewal is 30 September and there is a commitment on the table that I'm not confident we can meet on the timeline that was given. Dana and I are working through options this week. **Asks** If Priya's team reaches out for reference calls over the next two weeks, I'd be grateful for quick responses. Short window. Ravi Menon\nCEO, Tensile"
+      ],
+      "source_chunks": [
+        "gmail-investor-update-2026-07#1",
+        "gmail-investor-update-2026-07#2"
+      ],
+      "source_meta": [
+        {
+          "source": "gmail",
+          "title": "Tensile — July update",
+          "date": "2026-08-04"
+        },
+        {
+          "source": "gmail",
+          "title": "Tensile — July update",
+          "date": "2026-08-04"
+        }
+      ],
+      "shape": "gap",
+      "tempts": "The context says eight months. Seven months appears elsewhere in the corpus as the August figure, and a model that answers seven has used knowledge the context does not contain."
+    },
+    {
+      "id": "f15",
+      "question": "Why do the Q3 OKRs leave enterprise identity out of the enterprise-readiness objective?",
+      "ideal_context": [
+        "O3 deliberately does not include enterprise identity. That work is scheduled for Q4 and committing to it this quarter would be committing to something we don't have the capacity to do. The measurable outcome we care about — deals not lost to compliance gaps — is what's on the page instead. Worth revisiting at the Q3 board meeting on 17 September if that third key result stops holding."
+      ],
+      "source_chunks": [
+        "notion-okrs-q3-2026#1"
+      ],
+      "source_meta": [
+        {
+          "source": "notion",
+          "title": "Company OKRs — Q3 2026",
+          "date": "2026-08-03"
+        }
+      ],
+      "shape": "why",
+      "tempts": "The stated reason is capacity and a refusal to commit to what cannot be done. The Q4 schedule is mentioned; the 5-7 week estimate and the Northwind consequences are not."
+    },
+    {
+      "id": "f16",
+      "question": "What does the Northwind master services agreement say about renewal?",
+      "ideal_context": [
+        "# MASTER SERVICES AGREEMENT **Between:** Tensile, Inc. (\"Provider\")\n**And:** Northwind Logistics Ltd. (\"Customer\")\n**Effective Date:** 30 September 2025 --- ## 1. Definitions **\"Service\"** means the Tensile load testing and performance monitoring platform as described in the applicable Order Form. **\"Named User\"** means an individual authorised by Customer to access the Service under Customer's account. **\"Order Form\"** means an ordering document executed by both parties referencing this Agreement. --- ## 2. Term **2.1 Initial Term.** This Agreement commences on the Effective Date and continues for twelve (12) months, expiring **30 September 2026** (the \"Initial Term\"). **2.2 Renewal.** This Agreement does not renew automatically. Any continuation beyond the Initial Term requires a new Order Form executed by both parties prior to expiry. **2.3 Termination for cause.** Either party may terminate on thirty (30) days written notice of a material breach that remains uncured. --- ## 3. Fees **3.1** Annual fee for the Initial Term: **$84,000 USD**, invoiced annually in advance. **3.2** The fee covers up to forty (40) Named Users. Usage above that threshold is billed quarterly in arrears at $150 per additional Named User per month. **3.3** Payment terms net thirty (30) days from invoice date. --- ## 4. Service Levels **4.1 Availability.** Provider will maintain 99.5% monthly uptime, excluding scheduled maintenance notified at least seventy-two (72) hours in advance. **4.2 Service credits.** Where monthly availability falls below the commitment: | Monthly availability | Credit |\n|---|---|\n| 99.0% – 99.5% | 5% of monthly fee |\n| 95.0% – 99.0% | 10% of monthly fee |\n| Below 95.0% | 25% of monthly fee | **4.3 Support.** Business hours support, 09:00–18:00 UK time, weekdays. Sev-1 response within four (4) hours. --- ## 5. Data Protection and Security **5.1** Provider shall process Customer Data solely to provide the Service. **5.2** Provider shall maintain industry-standard technical and organisational measures, including encryption at rest and in transit. **5.3** Provider shall notify Customer of any personal data breach within twenty-four (24) hours of becoming aware. **5.4** Sub-processors are listed at tensile.dev/subprocessors. Provider will give thirty (30) days notice of additions. **5.5** Customer Data is hosted in the eu-west-2 region. --- ## 6. Access and Authentication **6.1** Customer is responsible for managing its Named Users and for the security of their credentials. **6.2** Provider requires multi-factor authentication on all accounts. ---"
+      ],
+      "source_chunks": [
+        "drive-northwind-msa#0"
+      ],
+      "source_meta": [
+        {
+          "source": "gdrive",
+          "title": "Master Services Agreement — Tensile and Northwind Logistics",
+          "date": "2025-09-30"
+        }
+      ],
+      "shape": "gap",
+      "tempts": "No automatic renewal, a new Order Form required before expiry, term ending 30 September 2026. The contract contains no commitment about SSO or identity at all -- that absence is load-bearing in this corpus, and a model that has read the renewal thread will want to connect the two."
+    },
+    {
+      "id": "f17",
+      "question": "What did Dana tell Northwind about SOC 2 in the security questionnaire response?",
+      "ideal_context": [
+        "Completed questionnaire attached. I've answered everything honestly, including where we fall short, because I'd rather you find the gaps from me than from the document. The parts you'll care about: **Encryption and key management** — AES-256 at rest, TLS 1.3 in transit, keys in AWS KMS with annual rotation. No concerns here. **Incident response** — documented process, 24-hour customer notification commitment. We've had one Sev-1 in the last twelve months, disclosed at the time. **Section 7, access control** — this is a gap. We support individual accounts with enforced MFA, but we do not support SAML or any external identity provider today. Every user authenticates directly against us. **Section 9, audit and logging** — partial. We log access events and retain them for ninety days internally, but there is no customer-facing export and no configurable retention. **SOC 2** — we don't have a report. We've selected an auditor and the Type II observation window starts in October, which puts a report roughly mid-2027. I'd rather set expectations correctly than have this come back as a surprise in six months. Dana Whitfield\nCTO, Tensile --- ## Message 3 — 27 May 2026, 09:50 **From:** Karin Holt <karin.holt@northwindlogistics.com>\n**To:** Dana Whitfield <dana@tensile.dev>\n**Cc:** Linda Marsh <linda.marsh@northwindlogistics.com>\n**Subject:** Re: Security questionnaire — Tensile Dana,"
+      ],
+      "source_chunks": [
+        "gmail-northwind-security-review#1"
+      ],
+      "source_meta": [
+        {
+          "source": "gmail",
+          "title": "Security questionnaire — Tensile",
+          "date": "2026-05-27"
+        }
+      ],
+      "shape": "gap",
+      "tempts": "No report, auditor selected, observation window from October, report roughly mid-2027. Karin's verdict that it is 'noted but not blocking' is in the next chunk and is the natural thing to append as reassurance."
+    },
+    {
+      "id": "f18",
+      "question": "What does the Head of Engineering scorecard list as must-haves for the role?",
+      "ideal_context": [
+        "# Role Scorecard — Head of Engineering **Owner:** Dana Whitfield · **Approved:** May 2026 · **Reports to:** Dana Whitfield ## Why this role exists Dana is currently carrying architecture, delivery sequencing, and people management for a team of six, going to ten. Roughly 35% of her week is in one-to-ones and performance conversations, which is time not spent on the parts of the product only she can do. This role takes delivery and people. Architecture stays with Dana. ## Mission — first twelve months 1. Own quarterly delivery. The roadmap ships on the dates it says, or the dates change before the quarter starts rather than during it. 2. Grow the team from six to ten without a drop in shipping velocity. 3. Establish an on-call rotation that doesn't route everything to Dana. ## Must have - Has managed engineers through a 2x team growth, ideally at Series A to B stage\n- Distributed systems depth sufficient to review design docs credibly\n- Has owned a quarterly planning process end to end\n- Has hired at least six engineers personally ## Nice to have - Developer tools or observability background\n- Experience with an enterprise readiness push — SSO, audit, compliance\n- Has worked with a technical founder and not resented it ## Compensation"
+      ],
+      "source_chunks": [
+        "notion-head-of-engineering-scorecard#0"
+      ],
+      "source_meta": [
+        {
+          "source": "notion",
+          "title": "Role Scorecard — Head of Engineering",
+          "date": "2026-05-06"
+        }
+      ],
+      "shape": "gap",
+      "tempts": "Four must-haves are listed, with nice-to-haves beside them to be confused for them. The approved band is in the next chunk and neither candidate is named anywhere here."
+    },
+    {
+      "id": "f19",
+      "question": "Why was the Head of Engineering band set where it was?",
+      "ideal_context": [
+        "**Approved band: $240,000 base, up to 0.8% equity, standard four-year vest with a one-year cliff.** Band approved by Ravi and Nadia Osei in May. It sits at roughly the 60th percentile for the role at this stage, which is deliberate — we were losing candidates at the 40th percentile earlier this year and lost six weeks per attempt doing it. Anything above this band needs board approval before an offer goes out. ## Interview loop 1. Intro with Ravi — 45 min\n2. Technical depth with Dana — 90 min\n3. Delivery and planning case study — 60 min\n4. Two peer conversations with senior engineers\n5. Reference calls — minimum three, at least two direct reports"
+      ],
+      "source_chunks": [
+        "notion-head-of-engineering-scorecard#1"
+      ],
+      "source_meta": [
+        {
+          "source": "notion",
+          "title": "Role Scorecard — Head of Engineering",
+          "date": "2026-05-06"
+        }
+      ],
+      "shape": "why",
+      "tempts": "The reason is concrete and slightly odd -- losing candidates at the 40th percentile and six weeks per attempt. Generic market reasoning in its place would be invention."
+    },
+    {
+      "id": "f20",
+      "question": "Why does pitch deck v4 describe the enterprise gap as a capacity problem rather than a research problem?",
+      "ideal_context": [
+        "## 5 — Go-to-market Self-serve generates most new logos, enterprise generates most new revenue. Enterprise deals close at 6.2x the ACV of self-serve. Trial-to-paid conversion 6.6%, up from 4.1% after an onboarding rebuild in April. --- ## 6 — The enterprise opportunity *New in this version.* Our largest accounts are asking for capabilities we don't yet have. That is a constraint today and the clearest growth vector we have. | Signal | Evidence |\n|---|---|\n| Enterprise ACV | 6.2x self-serve |\n| Deals stalled on enterprise gaps, H1 | 2 |\n| ARR with unmet enterprise requirements | $190,000 (22% of current) |\n| Requirements named | Federated identity, audit export, SOC 2, EU residency | Audit log export ships August. SOC 2 observation begins October. Federated identity and role-based access are scheduled for Q4. Every one of these is a known, scoped, six-to-eight week build. This is not a research problem — it is a capacity problem, and capacity is what this round buys. --- ## 7 — Market Performance testing and observability tooling. We sit between the two and win when the buyer is an engineering leader who has been burned by a launch. Primary competitors: Surge Labs, Percival. We lose most often to incumbents bundling performance into an existing observability contract, which is a pricing problem rather than a product one. ---"
+      ],
+      "source_chunks": [
+        "drive-pitch-deck-v4#1"
+      ],
+      "source_meta": [
+        {
+          "source": "gdrive",
+          "title": "Tensile — Series A — v4",
+          "date": "2026-07-17"
+        }
+      ],
+      "shape": "why",
+      "tempts": "Because the builds are known, scoped and six-to-eight weeks. Note that figure disagrees with the Q4 roadmap's 5-7 weeks for SSO -- faithful here means quoting what this chunk says, not the estimate the corpus gives elsewhere."
+    },
+    {
+      "id": "f21",
+      "question": "What did Dana report about audit logging in the security questionnaire?",
+      "ideal_context": [
+        "Completed questionnaire attached. I've answered everything honestly, including where we fall short, because I'd rather you find the gaps from me than from the document. The parts you'll care about: **Encryption and key management** — AES-256 at rest, TLS 1.3 in transit, keys in AWS KMS with annual rotation. No concerns here. **Incident response** — documented process, 24-hour customer notification commitment. We've had one Sev-1 in the last twelve months, disclosed at the time. **Section 7, access control** — this is a gap. We support individual accounts with enforced MFA, but we do not support SAML or any external identity provider today. Every user authenticates directly against us. **Section 9, audit and logging** — partial. We log access events and retain them for ninety days internally, but there is no customer-facing export and no configurable retention. **SOC 2** — we don't have a report. We've selected an auditor and the Type II observation window starts in October, which puts a report roughly mid-2027. I'd rather set expectations correctly than have this come back as a surprise in six months. Dana Whitfield\nCTO, Tensile --- ## Message 3 — 27 May 2026, 09:50 **From:** Karin Holt <karin.holt@northwindlogistics.com>\n**To:** Dana Whitfield <dana@tensile.dev>\n**Cc:** Linda Marsh <linda.marsh@northwindlogistics.com>\n**Subject:** Re: Security questionnaire — Tensile Dana,"
+      ],
+      "source_chunks": [
+        "gmail-northwind-security-review#1"
+      ],
+      "source_meta": [
+        {
+          "source": "gmail",
+          "title": "Security questionnaire — Tensile",
+          "date": "2026-05-27"
+        }
+      ],
+      "shape": "near-miss",
+      "tempts": "Ninety days, internal only, no customer-facing export. Twelve months is the figure everywhere else in the corpus -- it is what Northwind asked for and what Tensile later promised. Answering twelve months here is reading the requirement as the reality."
+    },
+    {
+      "id": "f22",
+      "question": "What is Tensile asking to raise, and what does the deck say the money buys?",
+      "ideal_context": [
+        "## 8 — Team 14 people. Ravi Menon (CEO), Dana Whitfield (CTO). Head of Engineering at final-stage interviews, target start 1 October. --- ## 9 — The ask **Raising $12M at $52M post-money.** Twenty-four months of runway. Funds five engineering hires including a Head of Engineering, three commercial hires, and the enterprise readiness programme in parallel rather than sequenced. --- ## 10 — Use of funds | | |\n|---|---|\n| Engineering | 37% |\n| Go-to-market | 22% |\n| Enterprise readiness | 10% |\n| Infrastructure and G&A | 20% |\n| Buffer | 11% |"
+      ],
+      "source_chunks": [
+        "drive-pitch-deck-v4#2"
+      ],
+      "source_meta": [
+        {
+          "source": "gdrive",
+          "title": "Tensile — Series A — v4",
+          "date": "2026-07-17"
+        }
+      ],
+      "shape": "near-miss",
+      "tempts": "$12M, $52M post, twenty-four months of runway, five engineering hires, three commercial, and five percentages that must sum to 100. Dense enough to drop a line or round one, and the headcount and the fund split are easy to conflate."
+    },
+    {
+      "id": "f23",
+      "question": "What are the fee terms in the Northwind master services agreement?",
+      "ideal_context": [
+        "# MASTER SERVICES AGREEMENT **Between:** Tensile, Inc. (\"Provider\")\n**And:** Northwind Logistics Ltd. (\"Customer\")\n**Effective Date:** 30 September 2025 --- ## 1. Definitions **\"Service\"** means the Tensile load testing and performance monitoring platform as described in the applicable Order Form. **\"Named User\"** means an individual authorised by Customer to access the Service under Customer's account. **\"Order Form\"** means an ordering document executed by both parties referencing this Agreement. --- ## 2. Term **2.1 Initial Term.** This Agreement commences on the Effective Date and continues for twelve (12) months, expiring **30 September 2026** (the \"Initial Term\"). **2.2 Renewal.** This Agreement does not renew automatically. Any continuation beyond the Initial Term requires a new Order Form executed by both parties prior to expiry. **2.3 Termination for cause.** Either party may terminate on thirty (30) days written notice of a material breach that remains uncured. --- ## 3. Fees **3.1** Annual fee for the Initial Term: **$84,000 USD**, invoiced annually in advance. **3.2** The fee covers up to forty (40) Named Users. Usage above that threshold is billed quarterly in arrears at $150 per additional Named User per month. **3.3** Payment terms net thirty (30) days from invoice date. --- ## 4. Service Levels **4.1 Availability.** Provider will maintain 99.5% monthly uptime, excluding scheduled maintenance notified at least seventy-two (72) hours in advance. **4.2 Service credits.** Where monthly availability falls below the commitment: | Monthly availability | Credit |\n|---|---|\n| 99.0% – 99.5% | 5% of monthly fee |\n| 95.0% – 99.0% | 10% of monthly fee |\n| Below 95.0% | 25% of monthly fee | **4.3 Support.** Business hours support, 09:00–18:00 UK time, weekdays. Sev-1 response within four (4) hours. --- ## 5. Data Protection and Security **5.1** Provider shall process Customer Data solely to provide the Service. **5.2** Provider shall maintain industry-standard technical and organisational measures, including encryption at rest and in transit. **5.3** Provider shall notify Customer of any personal data breach within twenty-four (24) hours of becoming aware. **5.4** Sub-processors are listed at tensile.dev/subprocessors. Provider will give thirty (30) days notice of additions. **5.5** Customer Data is hosted in the eu-west-2 region. --- ## 6. Access and Authentication **6.1** Customer is responsible for managing its Named Users and for the security of their credentials. **6.2** Provider requires multi-factor authentication on all accounts. ---"
+      ],
+      "source_chunks": [
+        "drive-northwind-msa#0"
+      ],
+      "source_meta": [
+        {
+          "source": "gdrive",
+          "title": "Master Services Agreement — Tensile and Northwind Logistics",
+          "date": "2025-09-30"
+        }
+      ],
+      "shape": "partial",
+      "tempts": "$84,000 annually, forty Named Users included, $150 per user per month above that, net thirty. The 58 users they have grown to and the $96,000 proposal are both elsewhere and both tempting."
+    },
+    {
+      "id": "f24",
+      "question": "What did Northwind put on their remediation register after the security review, and did anything block continued use?",
+      "ideal_context": [
+        "Appreciated — that's a more useful response than most. Assessment: no blocking findings for continued use this term. Two items go on our remediation register. 1. **Federated identity (SAML).** Our tenant-wide Okta consolidation completes at the end of Q3. Vendors without SAML get written up in the quarterly access audit from that point. 2. **Audit log export.** Twelve months retention, customer-initiated, machine-readable. The absent SOC 2 is noted but not blocking given the compensating controls you've described. Linda will pick up timelines with your commercial team — this is a requirements conversation now, not a security one. Karin"
+      ],
+      "source_chunks": [
+        "gmail-northwind-security-review#2"
+      ],
+      "source_meta": [
+        {
+          "source": "gmail",
+          "title": "Security questionnaire — Tensile",
+          "date": "2026-05-27"
+        }
+      ],
+      "shape": "partial",
+      "tempts": "Two items and an explicit no-blocking-findings verdict. The September dates, the renewal and the eventual SSO commitment are not in this chunk; the register is a requirements list, not a timeline."
+    }
+  ]
+}
