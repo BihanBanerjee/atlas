@@ -447,9 +447,12 @@ anything being missed.
 2. **Recency.** q43 is the last 0.00-recall question: the corpus holds a runway
    figure for every month and retrieval returns the wrong one. A date filter
    needs a payload index, which the collection does not have. Nothing tested so
-   far touches this.
+   far touches this. *Confirmed again at pipeline level by f14, where the July
+   investor update existed in the corpus and retrieval returned March, April and
+   June instead — this is the widest-reaching open retrieval defect.*
 3. **Generator evaluation** — measured, run g1 below. The abstention check on the
    five `missing_data` questions is still outstanding and is not part of it.
+   Pipeline evaluation is measured too, run p1 at the end of this file.
 4. **Long-form corpus tier** — 249 of 256 documents fit in one 750-token chunk and
    v0.1 already scored 0.957 recall, so there is very little headroom for any of
    this to show in. Specified separately.
@@ -632,3 +635,179 @@ judge                gpt-4.1-mini, threshold 0.70
   a measurement of shape difficulty.
 - **Abstention is unmeasured.** The five `missing_data` questions have no check
   yet, and f24 shows false refusals are a live failure mode.
+
+---
+
+# Pipeline evaluation
+
+The retriever and the generator together, scored end to end. Same 24 questions
+as the generator eval above and the same judge, with one substitution:
+
+```
+generator eval   retrieval_context <- ideal_context, curated in the golden file
+pipeline eval    retrieval_context <- answer.hits, whatever Qdrant returned
+```
+
+That single change is the experiment. Everything else — questions, judge,
+threshold, context formatting — is held fixed so the difference between the two
+runs is attributable to retrieval.
+
+**The RAG triad.** Faithfulness and answer relevancy carry over from the
+generator eval. **Contextual Relevancy** is new and only exists at this level:
+the judge splits the *retrieved context* into statements and asks of each
+whether it is relevant to the question, scoring relevant / total. At component
+level the context was hand-picked, so scoring its relevance would have been
+scoring whoever picked it.
+
+All three are reference-free — none reads `expected_answer`. Judge
+`gpt-4.1-mini`, threshold 0.70. Answers and retrieved chunk refs archived to
+`eval/results/pipeline-*.json`.
+
+---
+
+## All runs
+
+| # | context | n | questions | contextual relevancy | faithfulness | answer relevancy | cost | time |
+|---|---|---|---|---|---|---|---|---|
+| g1 | curated | 1 | 24 | — | 0.94 (23/24) | 0.92 (21/24) | $0.088 | 42s |
+| **p1** | **retrieved** | 1 | 24 | **0.43** (2/24) | **0.96** (23/24) | **0.92** (20/24) | $0.304 | 78s |
+
+p1 cost splits $0.063 generation (45,720 in / 3,401 out) and $0.241 judging.
+Input tokens are 3× g1's because the window is five retrieved chunks rather than
+one or two curated ones, and contextual relevancy decomposes all five. The run
+was estimated at $0.15–0.20 beforehand; the estimate was low by half.
+
+Retrieval config is row 10: semantic chunking, hybrid dense+BM25 with RRF,
+`bge-reranker-large` 20 → 5, `top_k` 5.
+
+**Caveat on the g1 comparison.** g1 ran before the context-numbering fix (every
+chunk was labelled `[1]`) and before the source separator changed from `--` to
+`---`. The comparison is therefore not single-variable in the strict sense.
+
+---
+
+## What p1 showed
+
+**The generator does not degrade on real context.** Faithfulness 0.94 → 0.96
+and answer relevancy 0.92 → 0.92. The expected result was a drop: curated
+context is perfect context, and retrieval is not. There is no drop. On this set
+the retriever costs the generator nothing measurable, and the prompt written
+against curated context transfers to retrieved context unchanged.
+
+What that does **not** establish: these 24 questions were written to be easy to
+retrieve for, deliberately, so the result is about prompt robustness rather than
+about retrieval being adequate in general. The hard retrieval cases live in
+`golden_dataset.json` and are scored by the retriever eval.
+
+### Contextual relevancy 0.43 — chunk granularity, not ranking
+
+22 of 24 fell below threshold. The two that passed were f06 and f24.
+
+This does not contradict row 10's contextual precision of 0.880. The two
+metrics have different denominators:
+
+```
+contextual precision   is this CHUNK relevant to the ideal answer, by rank
+contextual relevancy   is this STATEMENT relevant to the question, all chunks
+```
+
+A correct chunk at rank 1, surrounded by its own ordinary prose, scores 1.0 on
+the first and well under 0.5 on the second. Precision says the ranking is good.
+Relevancy says each retrieved chunk carries more sentences than the question
+needs — which is a property of what was indexed, not of what was ranked. The
+retriever cannot return half a chunk.
+
+The judge's reasons bear this out: the statements it calls irrelevant are real
+body text, not artifacts. *"Provider shall process Customer Data solely to
+provide the Service"*, *"encryption at rest and in transit"*, *"Audit log export
+is scoped for Q3."*
+
+**The noise is not uniform.** Median chunk size is 117 tokens, so most chunks
+are small. The worst-scoring questions are the ones whose sources are long
+structured documents hitting the 750-token ceiling — f22 (0.18), f13 (0.19),
+f14 (0.19), f18 (0.22), f17 (0.28), f09 (0.29): the MSA, the security
+questionnaire, the role scorecards. If this is ever worth attacking it is a
+ceiling question, not a global chunk-size question.
+
+**On the 8.33% pass rate.** A 0.70 threshold requires 70% of every sentence in
+all five chunks to be relevant to the question, which whole-chunk retrieval over
+real documents will essentially never reach. The average is the number to carry
+from this metric; the pass rate is a property of the threshold.
+
+### f14 — the one faithfulness failure is a retrieval miss
+
+Scored 0.50. The answer opened *"The sources do not contain a July investor
+update"*, cited June's 9-month runway, and noted that the 3 August leadership
+sync carries July ARR of $1.04M without runway.
+
+Checked against the archive and the corpus: **every one of those statements is
+true.** The retrieved chunks were
+
+```
+gmail-all-hands-august#1            gmail-investor-update-2026-03#0
+gmail-investor-update-2026-06#1     notion-leadership-notes-2026-08-03#0
+gmail-investor-update-2026-04#1
+```
+
+March, April and June — no July. `gmail-investor-update-2026-07` **exists in the
+corpus** and reports runway 8 months; retrieval did not return it. June's figure
+really is 9 months.
+
+So this is the recency failure from the retriever eval, appearing at pipeline
+level on a question the generator set treats as easy. The generator reported its
+window honestly and was marked down for it: the judge's stated reason — that the
+output "incorrectly implies there is no July 2026 ARR update" — is wrong, since
+the answer explicitly cites the July ARR figure from the leadership notes.
+
+Adjusted reading: **faithfulness is effectively 1.00 on this run**, and the
+finding belongs to retrieval. It is the same defect as q43 and has the same
+blocker — a date filter needs a payload index the collection does not have.
+
+### Answer relevancy — four below threshold, all the same shape
+
+f05 (0.67), f10 (0.62), f13 (0.67), f20 (0.67). In each case the judge found the
+answer correct but penalised supporting detail as off-topic: f05's note that the
+tracing module is included rather than charged, f10's dilution arithmetic, f20's
+build-duration specifics. f13 scored 0.67 on the same question at g1, so that
+one is reproducible across context sources.
+
+This is the claim-decomposition behaviour recorded at g1 — the metric rewards an
+answer that stops at the literal question. Not fixed, deliberately: a prompt
+instruction to omit context would be tuning the generator to the judge's claim
+extractor.
+
+---
+
+## Current configuration (pipeline)
+
+```
+retrieval   row 10 — semantic chunking, hybrid dense+BM25 + RRF,
+            bge-reranker-large 20 -> 5, top_k 5, collection atlas_mine_v01
+generator   claude-haiku-4-5, temperature 0, the 6-rule prompt
+context     retrieved, formatted with source/title/date headers, one entry per hit
+judge       gpt-4.1-mini, threshold 0.70
+
+24 questions: contextual relevancy 0.43  faithfulness 0.96  answer relevancy 0.92
+```
+
+---
+
+## Limits of these numbers
+
+- **n=1, no noise floor.** As with g1, nothing here is a difference until a
+  second configuration exists to compare against.
+- **The question set is the easy one by design.** These 24 were written to stop
+  retrieval difficulty from confounding generator measurement. The absolute
+  scores are therefore optimistic against the corpus's real difficulty — f14
+  being the exception that got through.
+- **Contextual relevancy is biased down by the source headers.** Each context
+  entry begins `[n] source=… | title=… | date=…`, which the judge may count as
+  statements. The headers are kept because the generator needs the date and
+  because g1 was scored the same way; the bias is unmeasured. Read this metric
+  relatively between runs, not as an absolute.
+- **The judge erred again, on f14.** Second run in a row where hand-checking
+  overturned a failure. Treat any single failure here as unadjudicated until its
+  chunks have been read.
+- **The archive stores chunk refs, not chunk text.** f14 was only resolvable
+  because the corpus could be grepped directly. A question whose chunks had been
+  re-indexed since the run would not be resolvable this way.
