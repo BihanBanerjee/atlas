@@ -133,7 +133,15 @@ def main() -> None:
             # Formatted as the generator saw them, but kept apart rather than
             # joined: faithfulness attributes each claim to a source, and one
             # concatenated blob would lose which source supported what.
-            retrieval_context=[_format_sources([hit]) for hit in hits],
+            #
+            # `start=index` because formatting one hit at a time restarts the
+            # numbering at [1], so every block claimed to be source [1] and an
+            # answer citing [3] was judged against a context with no [3]. Run g1
+            # was scored before this was fixed.
+            retrieval_context=[
+                _format_sources([hit], start=index)
+                for index, hit in enumerate(hits, start=1)
+            ],
         ))
         records.append({
             "id": row["id"],

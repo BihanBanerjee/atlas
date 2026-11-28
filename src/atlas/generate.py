@@ -69,13 +69,22 @@ class Answer:
     output_tokens: int = 0
 
 
-def _format_sources(hits: list[Hit]) -> str:
-    """Number the chunks so the model has stable ids to cite."""
+def _format_sources(hits: list[Hit], start: int = 1) -> str:
+    """
+    Number the chunks so the model has stable ids to cite.
+
+    `start` exists for the evals, which pass one hit at a time. deepeval's
+    faithfulness metric attributes each claim to an individual context entry, so
+    the context must be a list rather than one joined blob -- but formatting each
+    hit on its own restarts the numbering, and every chunk comes out labelled
+    [1]. The answer then cites [3] against a context where no [3] exists. The
+    generator path never passes this and is unaffected.
+    """
     blocks = []
-    for index, hit in enumerate(hits, start=1):
+    for index, hit in enumerate(hits, start=start):
         header = f"[{index}] source={hit.source} | title={hit.title} | date={hit.date}"
         blocks.append(f"{header}\n{hit.text}")
-    return "\n\n--\n\n".join(blocks)
+    return "\n\n---\n\n".join(blocks)
 
 
 def answer_question(question: str, k:int | None = None) -> Answer:
