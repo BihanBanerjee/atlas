@@ -448,8 +448,187 @@ anything being missed.
    figure for every month and retrieval returns the wrong one. A date filter
    needs a payload index, which the collection does not have. Nothing tested so
    far touches this.
-3. **Generator evaluation** — never measured. Faithfulness, answer relevancy, and
-   the abstention check on the five `missing_data` questions.
+3. **Generator evaluation** — measured, run g1 below. The abstention check on the
+   five `missing_data` questions is still outstanding and is not part of it.
 4. **Long-form corpus tier** — 249 of 256 documents fit in one 750-token chunk and
    v0.1 already scored 0.957 recall, so there is very little headroom for any of
    this to show in. Specified separately.
+5. **Message-boundary chunking.** Run g1 found the chunker splitting an email
+   thread between a message's `From:` header and its body, which strands the
+   attribution two chunks away from the words it belongs to. Generic change —
+   structural headers become boundaries the chunker may not cross — and it is a
+   retrieval change, not a generator one.
+
+---
+
+# Generator evaluation
+
+Component-level evaluation of the generator alone — curated context, no
+retrieval. 24 questions in `eval/faithfulness_dataset.json`, a separate set from
+the 28 retriever goldens: questions written to stress near-duplicates stop being
+hard once the context is perfect, so these are easy to retrieve for and
+*tempting to embellish* instead. Six each of four shapes — `why`, `partial`,
+`gap`, `near-miss`.
+
+The retriever is out of the loop, which means Qdrant is too: the context is
+frozen chunk text inside the JSON, so a run needs no container.
+
+**Faithfulness** — the judge splits the answer into claims and checks each
+against the context; supported over total. **Answer relevancy** — splits the
+answer into claims and asks of each whether it helps answer the question. It
+never sees the context. Judge: `gpt-4.1-mini`, deliberately a different family
+from the Claude generator. Threshold 0.70. Answers and scores archived to
+`eval/results/generator-*.json`.
+
+The five `missing_data` questions are **not** in this set. A refusal asserts
+almost nothing, so faithfulness scores it trivially high and learns nothing.
+Abstention needs its own golden file and its own check.
+
+---
+
+## All runs
+
+| # | generator | temp | n | questions | faithfulness | answer relevancy | cost | time |
+|---|---|---|---|---|---|---|---|---|
+| **g1** | `claude-haiku-4-5` | 0 | 1 | 24 | **0.94** (23/24 pass) | **0.92** (21/24 pass) | $0.088 | 42s |
+
+Cost splits $0.027 generation (14,523 in / 2,513 out on Haiku at $1/$5 per MTok)
+and $0.061 judging. The judge is the expensive half because faithfulness
+decomposes every answer into claims and verifies them one at a time, so judge
+calls scale with answer length, not with the question count.
+
+No noise floor yet — g1 is a single run. Nothing here should be read as a
+difference until there is a second configuration to compare it against.
+
+By shape:
+
+```
+why         6/6    near-miss   6/6    gap   4/6    partial   4/6
+```
+
+---
+
+## What g1 showed
+
+Four questions failed. **Two of the four are the judge being wrong, and the
+chunks prove it** — which is the main finding of the run, more than the headline
+numbers are.
+
+| id | shape | metric | score | verdict |
+|---|---|---|---|---|
+| f06 | gap | answer relevancy | 0.17 | judge error |
+| f10 | partial | faithfulness | 0.67 | judge error |
+| f13 | gap | answer relevancy | 0.67 | judge harsh, defensible |
+| f24 | partial | answer relevancy | 0.50 | **real generator error** |
+
+So the honest reading is **one genuine failure in 24**, not four. Faithfulness is
+effectively 1.00; answer relevancy has one real miss.
+
+### f06 — the generator passed the hardest question in the set and scored 0.17
+
+The commitments log records an audit-log export and a closed onboarding session
+for Northwind, and deliberately does **not** record the SAML promise — that
+absence is why the document exists. The model listed exactly those two and
+omitted SSO. Faithfulness 1.00.
+
+Structure is what failed, not content. The answer is a lead-in — "committed to
+Northwind Logistics:" — followed by bullets. Claim decomposition splits the
+bullets off from the lead-in, so each claim reads *"Audit log export, 12-month
+retention, customer-initiated"* with no entity in it, and answer relevancy never
+sees the context, so there is nothing for the judge to attach them to. Hence its
+reason: *"do not address Tensile's commitments to Northwind Logistics"* — the
+entity was in the sentence it discarded.
+
+**This is a measured property of answer relevancy, not a defect to fix.** The
+obvious response is a prompt line telling the model to restate the subject in
+every claim, and that is tuning the generator to the judge's claim extractor.
+The answer was already correct and well-formed for a human reader. Recorded so
+it is not chased later.
+
+### f10 — the judge misattributed a quote, and the chunker is why
+
+The two frozen chunks are `gmail-fernpath-term-sheet#1` and `#3`. Chunk `#1`
+ends on a header block:
+
+```
+**From:** Ravi Menon <ravi@tensile.dev>
+**To:** Priya Kothari <priya@fernpath.vc>
+```
+
+Chunk `#3` is the body of the *next* message — *"Pool: we can go to 10.5%. Below
+that I'd be arguing with my own partnership"* — signed **Priya**. Its own
+`From:` header lives in chunk `#2`, which is not in the context.
+
+So the nearest visible sender name to the 10.5% concession is Ravi's, two chunks
+upstream, and the judge took it. The generator did not: it read the `Priya`
+sign-off and the "my own partnership" voice and attributed the concession to
+Fernpath, which is correct and is what the dataset's own `tempts` note says the
+right answer is. Dataset and generator agree; the judge dissents.
+
+The finding here is a chunking one: **a message's attribution can end up in a
+different chunk from its words.** Carried into the retriever's Next list as
+item 5.
+
+### f13 — borderline
+
+Asked what Tom Brennan said he has *not* done, the model gave the two
+admissions and added that he has led six engineers "but informally". Penalised
+for including what he *has* done. That clause is a qualifier on the same
+admission rather than a digression, so this reads as a harsh metric call, not a
+generator defect. Left in the failure count because the call is defensible.
+
+### f24 — the one real failure: a false refusal from a pronoun
+
+The chunk is signed **Karin**, writing from Northwind's side: *"Two items go on
+our remediation register."* "Our" is Northwind's. Both items and the explicit
+*"no blocking findings for continued use this term"* are in the chunk. The model
+read "our" as Tensile's, concluded the source was about the wrong company, and
+refused a question it could have answered in full.
+
+Two things worth keeping:
+
+- It is an **over-refusal**, the opposite of the failure mode this set was built
+  to catch. The prompt's instruction to refuse rather than guess is working; the
+  reading that triggered it was wrong.
+- **Faithfulness scored it 1.00.** A refusal asserts almost nothing, so there is
+  nothing to contradict. Only relevancy caught it, and only partially. That is
+  the same blind spot that keeps abstention in a separate file — and it shows
+  here that the blind spot is not confined to the questions deliberately set
+  aside for it.
+
+---
+
+## Current configuration (generator)
+
+```
+generator            claude-haiku-4-5
+temperature          0
+prompt               6 rules — per-claim citations, dated-source precedence,
+                     arithmetic allowed / invention not, partial answers,
+                     no outside knowledge, lead with the answer
+context              curated, 1–2 chunks per question, frozen in the golden set
+judge                gpt-4.1-mini, threshold 0.70
+```
+
+---
+
+## Limits of these numbers
+
+- **n=1, no noise floor.** The retriever's spread was only visible after
+  repeated runs; nothing comparable is known here yet.
+- **No prompt baseline.** The prompt was rewritten before this first
+  measurement, so there is no number for the version that preceded it and no way
+  to say what the rewrite bought.
+- **The judge is a measuring instrument with its own error rate, and this run
+  measured it at 2 of 24.** Both errors were caught only by reading the source
+  chunks by hand. Aggregate scores on this set should not be quoted without that
+  caveat, and a future failure should be read against its chunks before being
+  attributed to the generator.
+- **Curated context is not retrieved context.** These numbers say what the
+  generator does with correct sources. They say nothing about what it does with
+  the top-5 the retriever actually returns.
+- **Shape counts are 6 each**, which is too few for a per-shape number to mean
+  anything; the breakdown above is a description of where the failures fell, not
+  a measurement of shape difficulty.
+- **Abstention is unmeasured.** The five `missing_data` questions have no check
+  yet, and f24 shows false refusals are a live failure mode.
